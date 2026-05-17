@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+    <style>
+  /* Evita el flash blanco al cargar */
+  html, body {
+    background-color: #000000 !important;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  /* Opcional: Un pequeño fade-in para que el contenido no aparezca de golpe */
+  #root {
+    background-color: #000000;
+  }
+</style>
+  </head>
+  <body>
+    <div id="root">
+  <div style="
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    background-color: #000; 
+    color: #00d4ff; 
+    font-family: sans-serif;
+    letter-spacing: 5px;
+  ">
+    <div style="
+      width: 40px; 
+      height: 40px; 
+      border: 2px solid rgba(0,212,255,0.1); 
+      border-top: 2px solid #00d4ff; 
+      border-radius: 50%; 
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    "></div>
+  </div>
+</div>
+
+<style>
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
