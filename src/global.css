@@ -1,0 +1,511 @@
+/* ============================================================
+   CBB / FLUX CODE — GLOBAL DESIGN SYSTEM
+   src/global.css
+   ============================================================ */
+
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* ────────────────────────────────────────────────────────────
+   1. TOKENS
+   ──────────────────────────────────────────────────────────── */
+:root {
+  /* Paleta Oficial */
+  --cbb-verde-principal:    #008B76;
+  --cbb-verde-principal-rgb: 0, 139, 118;
+  --cbb-verde-brillante:    #28DC8F;
+  --cbb-verde-brillante-rgb: 40, 220, 143;
+  --cbb-oscuro-fondo:       #142F29;
+  --cbb-oscuro-fondo-rgb:   20, 47, 41;
+  --cbb-azul-contraste:     #003E48;
+  --cbb-verde-llano:        #16C64F;
+  --cbb-verde-limon:        #CCD845;
+  --cbb-ocre-tierra:        #CB7E10;
+
+  /* Neutros */
+  --cbb-sage-light:         #EEF7F4;
+  --cbb-mint-pastel:        #A8DFCA;
+  --cbb-emerald-cream:      #E7FAEE;
+  --cbb-white:              #FFFFFF;
+  --cbb-dot-matrix:         #1A4A3F;
+
+  /* Tipografías */
+  --font-primary:   'Satoshi', sans-serif;
+  --font-secondary: 'Crimson Text', serif;
+
+  /* Espaciado */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+
+  /* Radio */
+  --radius-sm:      8px;
+  --radius-md:      16px;
+  --radius-lg:      24px;
+  --radius-pill:    999px;
+
+  /* Transiciones */
+  --transition-fast:   0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow:   0.4s ease;
+
+  /* Sombras sutiles */
+  --shadow-card: 0 2px 16px rgba(0, 139, 118, 0.08);
+  --shadow-card-hover: 0 6px 28px rgba(0, 139, 118, 0.16);
+}
+
+/* ────────────────────────────────────────────────────────────
+   2. RESET & BASE MÓVIL (Capacitor-safe)
+   ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--cbb-white);
+  color: var(--cbb-oscuro-fondo);
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--cbb-verde-principal);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--cbb-verde-brillante);
+}
+
+/* ────────────────────────────────────────────────────────────
+   3. TIPOGRAFÍA
+   ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--cbb-oscuro-fondo);
+}
+
+/* Fluid headings */
+h1 { font-size: clamp(2.2rem, 8vw, 3.2rem); }
+h2 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+h3 { font-size: clamp(1.2rem, 4.5vw, 1.8rem); }
+h4 { font-size: clamp(1rem, 3.5vw, 1.3rem); }
+
+.label-caps {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cbb-verde-principal);
+}
+
+/* Serif: solo para citas */
+.quote-text,
+.quote2-text {
+  font-family: var(--font-secondary);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--cbb-oscuro-fondo);
+}
+
+/* ────────────────────────────────────────────────────────────
+   4. BOTONES — React Bootstrap overrides
+   ──────────────────────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-primary) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  border-radius: var(--radius-pill) !important;
+  padding: 0.65rem 1.6rem !important;
+  transition:
+    transform var(--transition-fast),
+    background-color var(--transition-normal),
+    box-shadow var(--transition-normal) !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-card-hover) !important;
+}
+
+.btn:active {
+  transform: translateY(3px) !important;
+  box-shadow: none !important;
+}
+
+/* Variantes CBB */
+.btn-cbb-primary {
+  background-color: var(--cbb-verde-brillante) !important;
+  color: var(--cbb-azul-contraste) !important;
+}
+
+.btn-cbb-primary:hover {
+  background-color: #22c880 !important;
+  color: var(--cbb-azul-contraste) !important;
+}
+
+.btn-cbb-secondary {
+  background-color: var(--cbb-verde-principal) !important;
+  color: var(--cbb-white) !important;
+}
+
+.btn-cbb-secondary:hover {
+  background-color: #007a66 !important;
+  color: var(--cbb-white) !important;
+}
+
+.btn-cbb-outline {
+  background-color: transparent !important;
+  border: 2px solid var(--cbb-verde-principal) !important;
+  color: var(--cbb-verde-principal) !important;
+}
+
+.btn-cbb-outline:hover {
+  background-color: var(--cbb-verde-principal) !important;
+  color: var(--cbb-white) !important;
+}
+
+.btn-cbb-ghost {
+  background-color: transparent !important;
+  border: 2px solid rgba(255,255,255,0.55) !important;
+  color: var(--cbb-white) !important;
+}
+
+.btn-cbb-ghost:hover {
+  background-color: rgba(255,255,255,0.12) !important;
+  color: var(--cbb-white) !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+   5. CARDS — React Bootstrap overrides
+   ──────────────────────────────────────────────────────────── */
+.card {
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal) !important;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover) !important;
+  transform: translateY(-2px);
+}
+
+.card-body {
+  padding: var(--space-lg) !important;
+}
+
+/* Card variantes */
+.card-dark {
+  background-color: var(--cbb-oscuro-fondo) !important;
+  color: var(--cbb-white) !important;
+}
+
+.card-dark .card-title,
+.card-dark h1, .card-dark h2,
+.card-dark h3, .card-dark h4 {
+  color: var(--cbb-white);
+}
+
+.card-teal {
+  background-color: var(--cbb-verde-principal) !important;
+  color: var(--cbb-white) !important;
+}
+
+.card-sage {
+  background-color: var(--cbb-sage-light) !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+   6. BADGES / TAGS / PILLS
+   ──────────────────────────────────────────────────────────── */
+.badge {
+  font-family: var(--font-primary) !important;
+  font-weight: 700 !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  border-radius: var(--radius-pill) !important;
+  padding: 0.3em 0.85em !important;
+}
+
+.tag-cbb {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  padding: 0.3em 0.9em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tag-cbb-mint {
+  background-color: var(--cbb-emerald-cream);
+  color: var(--cbb-verde-principal);
+}
+
+.tag-cbb-dark {
+  background-color: var(--cbb-oscuro-fondo);
+  color: var(--cbb-verde-brillante);
+}
+
+.tag-cbb-accent {
+  background-color: var(--cbb-verde-brillante);
+  color: var(--cbb-azul-contraste);
+}
+
+/* ────────────────────────────────────────────────────────────
+   7. SECCIONES / CONTENEDORES
+   ──────────────────────────────────────────────────────────── */
+.section-dark {
+  background-color: var(--cbb-oscuro-fondo);
+  color: var(--cbb-white);
+  padding: var(--space-xl) var(--space-md);
+}
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4 {
+  color: var(--cbb-white);
+}
+
+.section-teal {
+  background-color: var(--cbb-verde-principal);
+  color: var(--cbb-white);
+  padding: var(--space-xl) var(--space-md);
+}
+
+.section-sage {
+  background-color: var(--cbb-sage-light);
+  padding: var(--space-xl) var(--space-md);
+}
+
+.section-white {
+  background-color: var(--cbb-white);
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* ────────────────────────────────────────────────────────────
+   8. NAVBAR — React Bootstrap override
+   ──────────────────────────────────────────────────────────── */
+.navbar {
+  font-family: var(--font-primary) !important;
+  background-color: var(--cbb-verde-principal) !important;
+  padding: var(--space-sm) var(--space-md) !important;
+}
+
+.navbar-brand {
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  color: var(--cbb-white) !important;
+  font-size: 1.1rem !important;
+}
+
+.nav-link {
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  font-size: 0.78rem !important;
+  color: rgba(255,255,255,0.85) !important;
+  transition: color var(--transition-fast) !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--cbb-verde-brillante) !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+   9. FORM INPUTS — React Bootstrap override
+   ──────────────────────────────────────────────────────────── */
+.form-control,
+.form-select {
+  font-family: var(--font-primary) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1.5px solid var(--cbb-mint-pastel) !important;
+  padding: 0.65rem 1rem !important;
+  font-size: 0.95rem !important;
+  background-color: var(--cbb-sage-light) !important;
+  color: var(--cbb-oscuro-fondo) !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--cbb-verde-principal) !important;
+  box-shadow: 0 0 0 3px rgba(var(--cbb-verde-principal-rgb), 0.18) !important;
+  background-color: var(--cbb-white) !important;
+  outline: none !important;
+}
+
+.form-label {
+  font-family: var(--font-primary) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--cbb-verde-principal) !important;
+  margin-bottom: var(--space-xs) !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+   10. DOT MATRIX (fondo decorativo)
+   ──────────────────────────────────────────────────────────── */
+.dot-grid-bg {
+  position: relative;
+}
+
+.dot-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--cbb-dot-matrix) 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dot-grid-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ────────────────────────────────────────────────────────────
+   11. SCROLL REVEAL (stagger)
+   ──────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger automático para listas */
+.reveal-list > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-list > *:nth-child(2) { transition-delay: 0.12s; }
+.reveal-list > *:nth-child(3) { transition-delay: 0.19s; }
+.reveal-list > *:nth-child(4) { transition-delay: 0.26s; }
+.reveal-list > *:nth-child(5) { transition-delay: 0.33s; }
+.reveal-list > *:nth-child(6) { transition-delay: 0.40s; }
+
+/* ────────────────────────────────────────────────────────────
+   12. DIVIDERS & GEOMETRIC BREAKS
+   ──────────────────────────────────────────────────────────── */
+.section-break-vector {
+  display: block;
+  width: 56px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background-color: var(--cbb-verde-brillante);
+  margin: var(--space-md) 0;
+}
+
+/* Separador entre secciones con branding */
+.brand-divider {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--cbb-verde-principal) 30%,
+    var(--cbb-verde-brillante) 60%,
+    transparent
+  );
+  margin: var(--space-xl) 0;
+}
+
+/* ────────────────────────────────────────────────────────────
+   13. HERO OVERLAY (para imágenes de fondo)
+   ──────────────────────────────────────────────────────────── */
+.hero-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(var(--cbb-verde-principal-rgb), 0.82) 0%,
+    rgba(var(--cbb-verde-principal-rgb), 0.5) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ────────────────────────────────────────────────────────────
+   14. UTILIDADES
+   ──────────────────────────────────────────────────────────── */
+.text-cbb-principal  { color: var(--cbb-verde-principal) !important; }
+.text-cbb-brillante  { color: var(--cbb-verde-brillante) !important; }
+.text-cbb-oscuro     { color: var(--cbb-oscuro-fondo) !important; }
+.text-cbb-contraste  { color: var(--cbb-azul-contraste) !important; }
+.text-white          { color: var(--cbb-white) !important; }
+
+.bg-cbb-oscuro       { background-color: var(--cbb-oscuro-fondo) !important; }
+.bg-cbb-principal    { background-color: var(--cbb-verde-principal) !important; }
+.bg-cbb-sage         { background-color: var(--cbb-sage-light) !important; }
+.bg-cbb-cream        { background-color: var(--cbb-emerald-cream) !important; }
+
+.rounded-pill-cbb    { border-radius: var(--radius-pill) !important; }
+.rounded-lg-cbb      { border-radius: var(--radius-lg) !important; }
+
+/* Capsule layout helper */
+.capsule-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+
+/* Accesibilidad: foco visible */
+:focus-visible {
+  outline: 2px solid var(--cbb-verde-brillante);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

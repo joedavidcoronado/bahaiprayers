@@ -1,0 +1,272 @@
+/* ── Viewport & Slider ─────────────────────────────────────── */
+.viewport {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--cbb-oscuro-fondo);
+    position: relative;
+}
+
+.slider {
+    display: flex;
+    width: 200vw;
+    height: 100vh;
+}
+
+.screen {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.screenOraciones {
+    width: 100vw;
+    height: 100vh;
+    background: var(--cbb-oscuro-fondo);
+    overflow-y: auto;
+}
+
+/* ── Fondo principal ───────────────────────────────────────── */
+.wrapper {
+    background:
+        radial-gradient(ellipse 160% 55% at 50% -8%,  rgba(255,255,255,0.12) 0%, transparent 52%),
+        radial-gradient(ellipse 90%  80% at 50% 35%,  rgba(0, 139, 118, 0.55) 0%, rgba(40,220,143,0.25) 30%, transparent 65%),
+        radial-gradient(ellipse 60%  40% at 50% 20%,  rgba(40, 220, 143, 0.18) 0%, transparent 60%),
+        linear-gradient(180deg,
+            #e8e4dc 0%,
+            #c2bfb4 12%,
+            #6b7a6a 28%,
+            #1a2e1f 50%,
+            #050a05 75%,
+            #000000 100%
+        );
+    height: 100%;
+    color: var(--cbb-white);
+    font-family: var(--font-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Dot matrix decorativo */
+.wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /*background-image: radial-gradient(circle, var(--cbb-dot-matrix) 1px, transparent 1px);*/
+    background-size: 24px 24px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Bokeh / bolas de luz ──────────────────────────────────── */
+.bokehContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    filter: blur(45px);          /* ← menos blur = más notorio */
+    transition: opacity 3s ease-in-out;
+}
+
+.bokeh {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out;   /* ← era 22s, ahora 8s = más rápido */
+    opacity: 0;
+}
+
+.p1 {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle,
+        rgba(40, 220, 143, 0.85) 0%,
+        rgba(0, 139, 118, 0.5) 45%,
+        transparent 70%
+    );
+    top: -5%;
+    right: -15%;
+    left: auto;
+    animation-delay: -1s;
+}
+
+.p2 {
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.8) 0%,    /* ← dorado */
+        rgba(192, 192, 192, 0.653) 50%,
+        transparent 70%
+    );
+    top: 5%;
+    right: 25%;
+    left: auto;
+    bottom: auto;
+    animation-delay: -3s;
+}
+
+.p3 {
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle,
+        rgba(162, 224, 198, 0.8) 0%,    /* ← violeta */
+        rgba(82, 126, 113, 0.725) 35%,
+        transparent 70%
+    );
+    top: 12%;
+    right: 35%;
+    left: auto;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    0%,  100% { transform: translate(0, 0);          opacity: 0.5;  }
+    25%       { transform: translate(-3vw, 3vh);     opacity: 1;    }
+    50%       { transform: translate(-6vw, 1vh);     opacity: 0.85; }
+    75%       { transform: translate(-2vw, 5vh);     opacity: 1;    }
+}
+
+/* ── Reloj digital ─────────────────────────────────────────── */
+.digitalClock {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: clamp(3rem, 11.5vw, 5rem);
+    color: var(--cbb-dot-matrix);
+    text-shadow:
+        0 0 40px rgba(40, 220, 143, 0.45),
+        0 0 80px rgba(40, 220, 143, 0.2);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.03em;
+    position: relative;
+    z-index: 1;
+}
+
+.clockSeconds {
+    font-size: 0.52em;
+    opacity: 0.4;
+    margin-left: 8px;
+    font-weight: 400;
+    color: var(--cbb-mint-pastel);
+}
+
+/* ── Fecha Badí ────────────────────────────────────────────── */
+.badiDate {
+    margin-top: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.badiDateMain {
+    font-family: var(--font-primary);
+    font-size: clamp(1rem, 3.6vw, 1.25rem);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cbb-white);
+}
+
+.gregorianDate {
+    font-size: 0.80rem;
+    color: var(--cbb-mint-pastel);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    opacity: 0.65;
+}
+
+/* ── Datos astronómicos ────────────────────────────────────── */
+.astroRow {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(40, 220, 143, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.astroItem {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.astroLabel {
+    display: block;
+    font-family: var(--font-primary);
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--cbb-verde-principal);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.astroValue {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cbb-mint-pastel);
+    letter-spacing: 0.05em;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: var(--cbb-oscuro-fondo); }
+::-webkit-scrollbar-thumb { background: var(--cbb-verde-principal); border-radius: 10px; }
+
+/* ── Fade-in del contenido tras la puerta ─────────────────── */
+.contentHidden {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.contentVisible {
+    opacity: 1;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.8s ease-out;
+}
+
+.bottomLogo {
+  position: absolute;
+  bottom: 0px;       /* Distancia desde el borde inferior de la pantalla */
+  left: 50%;          /* Lo mueve al centro horizontal */
+  transform: translateX(-50%); /* Lo centra perfectamente sobre su propio eje */
+  width: 30%;        /* Ajusta el ancho que quieras que tenga */
+  height: auto;
+  z-index: 10;        /* Asegura que quede por encima del fondo bokeh */
+  pointer-events: none; /* Evita que interfiera si el usuario intenta hacer swipe encima */
+  opacity: 0.8;       /* Opcional: un toque de transparencia para que sea elegante */
+}
+
+.swipeHint {
+    position: absolute;
+    bottom: 13%;
+    right: -4.3%;
+    width: 16%;
+    height: 44px;
+    z-index: 2;
+    pointer-events: none;
+    animation: pulse 2.5s ease-in-out infinite;
+}
+
+.brickAnim {
+    position: absolute;
+    top: 10%;          /* ← encima del reloj en lugar de bottom */
+    left: 45%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 120px;
+    z-index: 2;
+    pointer-events: none;
+}

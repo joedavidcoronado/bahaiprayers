@@ -1,0 +1,251 @@
+/* ── Página principal ──────────────────────────────────────── */
+.mainContainer {
+    background-color: #000;
+    min-height: 100vh;
+    width: 100%;
+    color: #fff;
+    padding: 80px 0;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Bokeh ─────────────────────────────────────────────────── */
+.bokehContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    filter: blur(50px);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.bokeh {
+    position: absolute;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    animation: float 25s infinite ease-in-out;
+    opacity: 0;
+}
+
+.p1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(0,212,255,0.3) 40%, transparent 70%);
+    top: -10%;
+    left: -10%;
+}
+
+.p2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,60,255,0.4) 0%, transparent 70%);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -5s;
+}
+
+.p3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+    top: 40%;
+    right: 10%;
+    animation-delay: -2s;
+}
+
+.p4 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(0,255,242,0.4) 0%, transparent 70%);
+    bottom: 20%;
+    left: 10%;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0%   { transform: translate(0, 0) scale(1);         opacity: 0;   }
+    20%  {                                               opacity: 0.5; }
+    50%  { transform: translate(10vw, -5vh) scale(1.1); opacity: 0.7; }
+    100% { transform: translate(-2vw, 2vh) scale(1);    opacity: 0;   }
+}
+
+/* ── Título ────────────────────────────────────────────────── */
+.title {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    font-weight: 200;
+    text-align: center;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    color: #ffffff;
+    z-index: 2;
+    position: relative;
+}
+
+/* ── Card de mensaje ───────────────────────────────────────── */
+.card {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 30px 20px;
+    text-align: center;
+    background-color: rgba(255,255,255,0.02);
+    backdrop-filter: blur(15px);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-radius: 4px;
+    z-index: 2;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    background-color: rgba(255,255,255,0.08);
+    border-color: rgba(0, 212, 255, 0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.cardFecha {
+    color: #00d4ff;
+    letter-spacing: 3px;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+}
+
+.cardTitulo {
+    letter-spacing: 2px;
+    font-size: 1rem;
+}
+
+/* ── Botón volver ──────────────────────────────────────────── */
+.backBtn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 3;
+    position: relative;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto 40px auto;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    padding: 0;
+}
+
+.backBtn:hover {
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+/* ── Vista de lectura ──────────────────────────────────────── */
+.readingWrapper {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.readingTitle {
+    letter-spacing: 4px;
+    line-height: 1.6;
+    font-size: 1.4rem;
+}
+
+/* ── Subtítulo de párrafo (luxury gray) ────────────────────── */
+.luxuryGray {
+    color: #888;
+    font-size: 0.7rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 12px;
+    border-left: 2px solid rgba(0, 212, 255, 0.5);
+    padding-left: 15px;
+    font-weight: 300;
+}
+
+/* ── Número de párrafo ─────────────────────────────────────── */
+.paraNum {
+    color: #00d4ff;
+    font-size: 1.1rem;
+    margin-right: 10px;
+    cursor: pointer;
+    opacity: 0.8;
+    font-weight: 400;
+    transition: 0.3s;
+    min-width: 30px;
+}
+
+.paraNum:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    color: #fff;
+}
+
+/* ── Texto de párrafo ──────────────────────────────────────── */
+.paraTexto {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.85);
+    font-weight: 300;
+    cursor: pointer;
+    text-align: justify;
+    transition: color 0.3s ease;
+}
+
+.paraTexto:hover {
+    color: #fff;
+}
+
+/* ── Modal ─────────────────────────────────────────────────── */
+.modalContent {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 4px;
+}
+
+.modalHeader {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.modalTitle {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+}
+
+.modalFooter {
+    border-top: none;
+}
+
+.modalInput {
+    background-color: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+}
+
+.modalInput:focus {
+    box-shadow: none !important;
+    border-color: #00d4ff !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+}
+
+.modalCancelBtn {
+    color: #888;
+    text-decoration: none;
+}
+
+.modalSaveBtn {
+    border-radius: 2px;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 10px; }

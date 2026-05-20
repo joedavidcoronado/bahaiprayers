@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2740 2740">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 302.78px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #5db885;
+        font-family: Satoshi-Bold, Satoshi;
+        font-weight: 700;
+      }
+
+      .cls-3 {
+        fill: #5eb885;
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        font-size: 308.84px;
+      }
+
+      .cls-4 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-5 {
+        letter-spacing: -.02em;
+      }
+    </style>
+  </defs>
+  <text class="cls-2" transform="translate(857.21 1273.64)"><tspan x="0" y="0">O</tspan><tspan class="cls-5" x="242.75" y="0">r</tspan><tspan x="357.94" y="0">aciones</tspan></text>
+  <rect class="cls-3" x="406.13" y="1180.06" width="431.37" height="237.93" transform="translate(-686.78 697.61) rotate(-39.74)"/>
+  <text class="cls-1" transform="translate(1084.93 1525.68)"><tspan x="0" y="0">Bah</tspan><tspan class="cls-4" x="541.36" y="0">á</tspan><tspan x="699.11" y="0">’ís</tspan></text>
+  <rect class="cls-3" x="653.56" y="1307.13" width="400.03" height="216.87"/>
+</svg>

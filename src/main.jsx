@@ -2,7 +2,9 @@ import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext.jsx';
-import { App } from '@capacitor/app'; // Asegúrate de haber hecho: npm install @capacitor/app
+import { App } from '@capacitor/app'; 
+
+import './global.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Principal from './pages/Principal.jsx';
@@ -16,6 +18,7 @@ import Biblioteca from './pages/Biblioteca.jsx';
 import Reflexiones from './pages/Reflexiones.jsx';
 import Configuracion from './pages/Configuracion.jsx';
 import ImagenSend from './pages/ImagenSend.jsx';
+import Prueba from './pages/Prueba.jsx';
 
 // Componente para gestionar la navegación física de Android
 const AppNavigationHandler = () => {
@@ -65,7 +68,7 @@ createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="/" element={<Principal />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/favoritos" element={<Favoritos />} />
+          <Route path="/favoritos" element={<Prueba />} />
           <Route path="/oraciones" element={<OracionesList />} />
           <Route path="/contador" element={<Contador />} />
           <Route path="/compass" element={<BahiCompass />} />
@@ -74,6 +77,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/reflexiones/:id" element={<Reflexiones />} />
           <Route path="/config" element={<Configuracion />} />
           <Route path="/imagen-send/:id" element={<ImagenSend />} />
+          
         </Routes>
       </HashRouter>
     </AppProvider>

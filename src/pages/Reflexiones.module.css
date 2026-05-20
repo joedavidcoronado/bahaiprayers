@@ -1,0 +1,157 @@
+/* ── Página principal ──────────────────────────────────────── */
+.page {
+    background-color: #000;
+    min-height: 100vh;
+    color: #fff;
+    padding: 100px 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 700px;
+}
+
+/* ── Botón volver ──────────────────────────────────────────── */
+.backBtn {
+    background: none;
+    border: none;
+    color: #666;
+    letter-spacing: 3px;
+    font-size: 0.7rem;
+    margin-bottom: 50px;
+    cursor: pointer;
+}
+
+.backBtn:hover {
+    color: #00d4ff;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+}
+
+/* ── Contexto del párrafo ──────────────────────────────────── */
+.parrafoLabel {
+    color: #00d4ff;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+}
+
+.parrafoTexto {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1rem;
+    font-weight: 200;
+    font-style: italic;
+    opacity: 0.6;
+    margin-top: 15px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+/* ── Separador ─────────────────────────────────────────────── */
+.hr {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 40px 0;
+}
+
+/* ── Textarea ──────────────────────────────────────────────── */
+.textarea {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #fff !important;
+    border: 1px solid #333 !important;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.textarea:focus {
+    box-shadow: none !important;
+    border-color: #00d4ff !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+}
+
+/* ── Botón guardar ─────────────────────────────────────────── */
+.saveBtn {
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    border-radius: 2px;
+}
+
+/* ── Tarjeta de nota ───────────────────────────────────────── */
+.noteCard {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 1px solid #00d4ff;
+    position: relative;
+}
+
+.noteFecha {
+    font-size: 0.65rem;
+    color: #00d4ff;
+    letter-spacing: 2px;
+}
+
+.noteTexto {
+    font-weight: 300;
+    line-height: 1.7;
+    color: #bbb;
+    white-space: pre-wrap;
+}
+
+/* ── Botones de nota (editar / eliminar) ───────────────────── */
+.noteActionBtn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.noteActionBtn:hover {
+    color: #00d4ff;
+}
+
+.noteActionBtnDanger:hover {
+    color: #ff4d4d;
+}
+
+/* ── Modal ─────────────────────────────────────────────────── */
+.modalWrapper {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 4px;
+}
+
+.modalHeader {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modalTitle {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+}
+
+.modalFooter {
+    border-top: none;
+}
+
+.modalCancelBtn {
+    color: #888;
+    text-decoration: none;
+}
+
+.modalSaveBtn {
+    border-radius: 2px;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+/* ── Spinner de carga ──────────────────────────────────────── */
+.spinnerPage {
+    background: #000;
+    height: 100vh;
+}

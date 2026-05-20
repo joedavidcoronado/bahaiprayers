@@ -1,0 +1,102 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: sans-serif;
+  z-index: 9999;
+}
+
+/* El contenedor del logo ahora escala todo un 20% hacia el centro */
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transform: scale(0.8);
+  transform-origin: center;
+}
+
+.star-wrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.spoke {
+  position: absolute;
+  left: 70px;
+  top: 70px;
+  width: 22px;        /* ← más angosto */
+  height: 43px;       /* ← más alto que ancho */
+  margin-left: -18px;
+  margin-top: -26px;
+  background: #00A878;
+  opacity: 0;
+  transform: rotate(var(--ar)) translateY(-53px) rotate(-31deg);  /* ← más lejos del centro */
+  animation: flyIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes flyIn {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--ar)) translateY(-140px) scale(0.3) rotate(-31deg);
+  }
+  65% { opacity: 1; }
+  85% {
+    transform: rotate(var(--ar)) translateY(-54px) scale(1.05) rotate(-31deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--ar)) translateY(-53px) scale(1) rotate(-31deg);
+  }
+}
+
+.text-col {
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.t1 {
+  font-family: var(--font-primary);
+  font-size: 46px;
+  font-weight: 600;
+  color: #00A878;
+  line-height: 1.05;
+}
+
+.t2 {
+  font-size: 36px;
+  font-weight: 400;
+  color: #00A878;
+  opacity: 0.9;
+  margin-top: -8px;
+}
+
+.loader-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: #00A878;
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+  animation: load 1.1s ease-in-out 0.05s forwards;
+}
+
+@keyframes load {
+  0%   { opacity: 0.5; transform: scaleX(0); }
+  80%  { opacity: 0.5; transform: scaleX(1); }
+  100% { opacity: 0;   transform: scaleX(1); }
+}

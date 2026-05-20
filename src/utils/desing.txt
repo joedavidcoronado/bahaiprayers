@@ -1,0 +1,35 @@
+DESIGN SYSTEM & TEXTURAL SPECIFICATION (FLUX CODE / CBB)
+1. CORE PALETTE & CHROMATIC ROLES
+Primary Institutional Dark: #142F29 | rgb(20, 47, 41) (Deep Forest Green). Used for solid high-contrast blocks, text on light backgrounds, and dark section containers.
+
+Primary Brand Teal: #008B76 | rgb(0, 139, 118) (Teal / Jade). Used for brand identity, main links, text labels, and responsive mobile navbars.
+
+Active Contrast Accent: #28DC8F | rgb(40, 220, 143) (Vibrant Mint / Lime Green). High-visibility asset exclusively for call-to-actions (:hover states, primary buttons, and critical highlight typography).
+
+Contrast Interactive Deep: #003E48 (Deep Navy Teal). Used exclusively as text color inside accent-colored elements to ensure WCAG accessibility compliance.
+
+Background Neutrals: Light Warm Sage (#eef7f4), Mint Pastel (#a8dfca), Soft Emerald Cream (#E7FAEE), and Pure White (#ffffff).
+
+2. TYPOGRAPHY & HIERARCHY
+Primary Typeface (Sans-Serif): var(--font-primary) (Target: Satoshi / Clean Geometric Neo-Grotesque).
+
+System UI / Navigation / Body: Capitalized (uppercase), letter-spacing: 0.1em, font weights from 400 (body) to 700 (headings/buttons).
+
+Fluid Sizing: Headers use fluid units via CSS clamp() (e.g., clamp(4.2rem, 8vw, 4.4rem)).
+
+Secondary Typeface (Serif): var(--font-secondary) (Target: High-end editorial Serif). Used exclusively for inspirational quotes (.quoteText, .quote2Text), styled with line-height: 1.45 to 1.6 to evoke premium literary authority.
+
+3. COMPOSITIONAL RULES & UI PATTERNS
+Asymmetric Organic Geometry: Rejection of standard square grids. Prefers vertical capsule/oval shapes (border-radius: 999px) with offset vertical alignments (align-self: flex-end / center) to create a rhythmic layout.
+
+Scatter Constellations & Depth: UI features absolute-positioned avatar clusters layered over technical background assets like micro-dot matrices (.dotGrid in 5 columns, #1a4a3f, opacity: 0.5). Intersections between sections are broken using absolute branding vectors (transform: translate(-50%, 50%)).
+
+Color Overlays & Legibility: Transparent hero media must be paired with left-weighted horizontal linear gradients (linear-gradient(to right, rgba(0, 139, 118, 0.82) 0%, ... transparent 100%)) to secure a solid color block for high-contrast white text layout.
+
+Micro-interactions & States:
+
+Buttons: Smooth transition on hover (translateY(-2px)) and explicit tactile feedback on active click (translateY(3px)).
+
+Mosaics: Grid layouts (repeat(4, 1fr)) feature image scale-up (scale(1.08)) bound with an overlay injection using data attributes (content: attr(data-label)).
+
+Scroll Performance: Initial UI elements are set to hidden states (opacity: 0, translateY(20px)) expecting progressive hydration via stagger delays (nth-child inline CSS delays).
