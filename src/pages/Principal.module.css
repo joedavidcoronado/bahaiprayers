@@ -48,6 +48,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
+     flex-direction: column; 
 }
 
 /* Dot matrix decorativo */
@@ -261,12 +262,12 @@
 }
 
 .brickAnim {
-    position: absolute;
-    top: 10%;          /* ← encima del reloj en lugar de bottom */
-    left: 45%;
-    transform: translateX(-50%);
+    position: relative;   /* ← fluye con el layout */
     width: 160px;
-    height: 120px;
+    height: 80px;
+    margin-bottom: 10px; /* ← lo acerca al reloj */
+    margin-right: 15px;
     z-index: 2;
     pointer-events: none;
+    align-self: center;
 }

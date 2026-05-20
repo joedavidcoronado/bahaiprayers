@@ -136,16 +136,15 @@
             fetchAstroData();
         }, []);
 
-        /* Swipe entre pantallas */
         const handleDragEnd = (_, info) => {
-            const threshold = window.innerWidth / 3;
             const { x: vx } = info.velocity;
             const { x: ox } = info.offset;
+            const threshold = window.innerWidth / 3;
 
-            if ((vx < -600 || ox < -threshold) && activeScreen === 0) {
+            if (activeScreen === 0 && (vx < -400 || ox < -threshold)) {
                 controls.start({ x: -window.innerWidth, transition: elegantTransition });
                 setActiveScreen(1);
-            } else if ((vx > 600 || ox > threshold) && activeScreen === 1) {
+            } else if (activeScreen === 1 && vx > 150) {
                 controls.start({ x: 0, transition: elegantTransition });
                 setActiveScreen(0);
             } else {
@@ -169,6 +168,8 @@
                             drag="x"
                             dragConstraints={{ left: -window.innerWidth, right: 0 }}
                             dragElastic={0.05}
+                            dragDirectionLock={false}
+                            dragMomentum={false}
                             animate={controls}
                             onDragEnd={handleDragEnd}
                             className={styles.slider}
@@ -177,7 +178,15 @@
                             <div className={styles.screen}>
 
                                 <div className={styles.wrapper}>
-                                    <div className={styles.brickAnim} style={{ opacity: isAppReady ? 1 : 0, transition: 'opacity 0.3s ease-out 2.2s' }}>
+                                    <div
+                                        className={styles.bokehContainer}
+                                        style={{ opacity: isAppReady ? 1 : 0 }}
+                                    >
+                                        <div className={`${styles.bokeh} ${styles.p1}`} />
+                                        <div className={`${styles.bokeh} ${styles.p2}`} />
+                                        <div className={`${styles.bokeh} ${styles.p3}`} />
+                                    </div>
+                                    <div className={styles.brickAnim} style={{ opacity: isAppReady ? 1 : 0, transition: 'opacity 0.3s ease-out 2.2s', transform: 'translateY(-40px)'  }}>
                                         <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
                                             <defs>
                                                 <style>{`
@@ -213,22 +222,13 @@
                                             </g>
                                         </svg>
                                     </div>
-                                    <div
-                                        className={styles.bokehContainer}
-                                        style={{ opacity: isAppReady ? 1 : 0 }}
-                                    >
-                                        <div className={`${styles.bokeh} ${styles.p1}`} />
-                                        <div className={`${styles.bokeh} ${styles.p2}`} />
-                                        <div className={`${styles.bokeh} ${styles.p3}`} />
-                                    </div>
-                                    
                                     <Container
                                         as={motion.div}
                                         variants={containerVariants}
                                         initial="hidden"
                                         animate={isAppReady ? "visible" : "hidden"}
                                         className="text-center"
-                                        style={{ zIndex: 2, position: 'relative' }}
+                                        style={{ zIndex: 2, position: 'relative', transform: 'translateY(-40px)' }}
                                     >
                                         <motion.div variants={itemVariants} className={styles.digitalClock}>
                                             {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
@@ -257,6 +257,7 @@
                                             ))}
                                         </motion.div>
                                     </Container>
+
                                     <div className={styles.swipeHint} style={{ opacity: isAppReady ? 0.8 : 0, transition: 'opacity 1.2s ease-out 1.5s' }}>
                                         <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -289,9 +290,10 @@
                             <div className={styles.screenOraciones}>
                                 <OracionesList />
                             </div>
-
+                            
                         </motion.div>
                     </div>
+                    
                 </div>
             </>
         );
