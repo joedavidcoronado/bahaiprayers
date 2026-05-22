@@ -1,15 +1,22 @@
 import React, { useState, useCallback } from "react";
 import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCompass, faLocationArrow, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../components/SideBar";
+import { useNavigate } from "react-router-dom";
+import styles from './BahiCompass.module.css';
+
+const TICKS = Array.from({ length: 72 }, (_, i) => i);
+const DEGREES = [0,30,60,90,120,150,180,210,240,270,300,330];
+const CX = 140, CY = 140;
 
 const BahiCompass = () => {
-    const [heading, setHeading] = useState(0);
-    const [qiblihAngle, setQiblihAngle] = useState(null);
-    const [distance, setDistance] = useState(null);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const [heading, setHeading]               = useState(0);
+    const [qiblihAngle, setQiblihAngle]       = useState(null);
+    const [distance, setDistance]             = useState(null);
+    const [error, setError]                   = useState(null);
+    const [loading, setLoading]               = useState(false);
     const [permissionGranted, setPermissionGranted] = useState(false);
 
     const ACRE_COORDS = { lat: 32.9433, lng: 35.0919 };
@@ -20,36 +27,23 @@ const BahiCompass = () => {
         const dLon = (ACRE_COORDS.lng - userLng) * (Math.PI / 180);
         const lat1 = userLat * (Math.PI / 180);
         const lat2 = ACRE_COORDS.lat * (Math.PI / 180);
-
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                  Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const d = R * c;
-        setDistance(Math.round(d));
-
+        const a = Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2 * Math.cos(lat1) * Math.cos(lat2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        setDistance(Math.round(R * c));
         const y = Math.sin(dLon) * Math.cos(lat2);
-        const x = Math.cos(lat1) * Math.sin(lat2) -
-                  Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-        let bearing = Math.atan2(y, x) * (180 / Math.PI);
-        setQiblihAngle((bearing + 360) % 360);
+        const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        setQiblihAngle((Math.atan2(y, x) * 180 / Math.PI + 360) % 360);
     };
 
     const handleOrientation = useCallback((event) => {
-        let compassHeading;
-        if (event.webkitCompassHeading !== undefined) {
-            compassHeading = event.webkitCompassHeading;
-        } else if (event.alpha !== null) {
-            compassHeading = 360 - event.alpha;
-        }
-        if (compassHeading !== undefined) {
-            setHeading(compassHeading);
-        }
+        let h;
+        if (event.webkitCompassHeading !== undefined) h = event.webkitCompassHeading;
+        else if (event.alpha !== null) h = 360 - event.alpha;
+        if (h !== undefined) setHeading(h);
     }, []);
 
     const initCompass = async () => {
-        setLoading(true);
-        setError(null);
-
+        setLoading(true); setError(null);
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 calculateQiblihData(pos.coords.latitude, pos.coords.longitude);
@@ -59,26 +53,17 @@ const BahiCompass = () => {
                             if (state === 'granted') {
                                 window.addEventListener('deviceorientation', handleOrientation);
                                 setPermissionGranted(true);
-                            } else {
-                                setError("Permiso de sensores denegado.");
-                            }
+                            } else setError("Permiso de sensores denegado.");
                             setLoading(false);
                         })
-                        .catch(e => {
-                            setError("Error de sensores: " + e.message);
-                            setLoading(false);
-                        });
+                        .catch(e => { setError("Error: " + e.message); setLoading(false); });
                 } else {
-                    const eventName = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
-                    window.addEventListener(eventName, handleOrientation);
-                    setPermissionGranted(true);
-                    setLoading(false);
+                    const ev = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+                    window.addEventListener(ev, handleOrientation);
+                    setPermissionGranted(true); setLoading(false);
                 }
             },
-            () => {
-                setError("Activa la ubicación para calcular la orientación.");
-                setLoading(false);
-            },
+            () => { setError("Activa la ubicación para calcular la orientación."); setLoading(false); },
             { enableHighAccuracy: true }
         );
     };
@@ -87,140 +72,165 @@ const BahiCompass = () => {
     if (diff > 180) diff = 360 - diff;
     const isAligned = qiblihAngle !== null && diff < 5;
 
-    const styles = {
-        wrapper: {
-            backgroundColor: "#000",
-            minHeight: "100vh",
-            color: "#fff",
-            fontFamily: "'Inter', sans-serif",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            paddingTop: "60px",
-            overflow: "hidden",
-            position: "relative"
-        },
-        backBtn: {
-            background: 'none',
-            border: 'none',
-            color: '#666',
-            marginBottom: '30px',
-            fontSize: '0.65rem',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            zIndex: 3,
-            position: 'relative',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease', // Añadido para suavizar el hover
-            padding: '0'
-        },
-        compassOuter: {
-            position: "relative",
-            width: "320px",
-            height: "320px",
-            borderRadius: "50%",
-            border: `2px solid ${isAligned ? '#00d4ff' : 'rgba(255,255,255,0.05)'}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: "30px",
-            background: "radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 80%)",
-            boxShadow: isAligned ? '0 0 50px rgba(0, 212, 255, 0.2)' : 'inset 0 0 20px rgba(255,255,255,0.02)',
-            transition: "all 0.6s cubic-bezier(0.23, 1, 0.32, 1)"
-        },
-        rotatingDial: {
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            // El truco de la elegancia: una transición suave pero responsiva
-            transform: `rotate(${-heading}deg)`,
-            transition: "transform 0.5s cubic-bezier(0.1, 0.3, 0.2, 1)"
-        },
-        qiblihMarkerArm: {
-            position: "absolute",
-            top: 0,
-            left: "50%",
-            width: "2px",
-            height: "50%",
-            transformOrigin: "bottom center",
-            transform: `translateX(-50%) rotate(${qiblihAngle}deg)`,
-            zIndex: 10
-        }
-    };
-
     return (
         <>
             <SideBar />
+            <div className={styles.wrapper}>
 
-            <div style={styles.wrapper}>
-                <button 
-                    style={styles.backBtn} 
-                    className="hover-white" 
-                    onClick={(e) => {
-                        e.stopPropagation(); // Evita que el clic cuente como incremento
-                        navigate(-1);
-                    }}
-                >
-                    ← VOLVER
-                </button>
-                <div className="bokeh-bg">
-                    <div className="sphere s1"></div>
-                    <div className="sphere s2"></div>
+                <div className={styles.bokehContainer}>
+                    <div className={`${styles.bokehSphere} ${styles.sphere1}`}></div>
+                    <div className={`${styles.bokehSphere} ${styles.sphere2}`}></div>
+                    <div className={`${styles.bokehSphere} ${styles.sphere3}`}></div>
                 </div>
 
-                <span className="label-ui">Orientación</span>
-                <h2 className={`title-ui ${isAligned ? 'aligned' : ''}`}>QIBLIH</h2>
+                <button className={styles.backBtn} onClick={(e) => { e.stopPropagation(); navigate(-1); }}>
+                    ← VOLVER
+                </button>
+
+                <span className={styles.heading}>Orientación</span>
+                <h2 className={`${styles.sacredText} ${isAligned ? styles.sacredTextAligned : ''}`}>
+                    QIBLIH
+                </h2>
 
                 {!permissionGranted ? (
-                    <div className="text-center mt-5" style={{ zIndex: 2 }}>
-                        <button className="btn-activate" onClick={initCompass} disabled={loading}>
+                    <div className={styles.activateArea}>
+                        <button className={styles.activateBtn} onClick={initCompass} disabled={loading}>
                             {loading ? <Spinner size="sm" /> : "ACTIVAR BRÚJULA"}
                         </button>
-                        {error && <p className="error-msg">{error}</p>}
+                        {error && <p className={styles.errorMsg}>{error}</p>}
                     </div>
                 ) : (
                     <>
-                        <div style={styles.compassOuter}>
-                            {/* Guía central fija */}
-                            <div className={`center-indicator ${isAligned ? 'active' : ''}`}></div>
-                            <div className={`compass-center-dot ${isAligned ? 'active' : ''}`}></div>
+                        {/* ── SVG Brújula ── */}
+                        <svg
+                            width="280" height="280"
+                            viewBox="0 0 280 280"
+                            className={`${styles.compassSvg} ${isAligned ? styles.compassSvgAligned : ''}`}
+                        >
+                            {/* Anillo exterior glass */}
+                            <circle
+                                cx={CX} cy={CY} r="137"
+                                fill="rgba(255,255,255,0.10)"
+                                stroke={isAligned ? "rgba(40,220,143,0.7)" : "rgba(255,255,255,0.40)"}
+                                strokeWidth="1.5"
+                                style={{ transition: 'stroke 1s ease' }}
+                            />
 
-                            <div style={styles.rotatingDial}>
-                                {/* Puntos Cardinales con mejor estilo */}
-                                <span className="cardinal-point n">N</span>
-                                <span className="cardinal-point s">S</span>
-                                <span className="cardinal-point e">E</span>
-                                <span className="cardinal-point w">W</span>
-                                
-                                <FontAwesomeIcon icon={faCompass} className="compass-bg-icon" />
+                            {/* Puntero fijo arriba (triángulo blanco) */}
+                            <polygon points="140,2 135,13 145,13" fill="rgba(0,62,72,0.85)" style={{marginBottom:"10px"}}/>
 
+                            {/* ── DIAL ROTANTE ── */}
+                            <g transform={`rotate(${-heading}, ${CX}, ${CY})`}>
+
+                                {/* Disco semi-transparente interior */}
+                                <circle
+                                    cx={CX} cy={CY} r="112"
+                                    fill="rgba(0,40,25,0.18)"
+                                    stroke="rgba(255,255,255,0.10)"
+                                    strokeWidth="0.8"
+                                />
+
+                                {/* Ticks de grado (72 marcas, cada 5°) */}
+                                {TICKS.map(i => {
+                                    const angle = i * 5;
+                                    const isMajor = i % 6 === 0;
+                                    const isMid   = i % 3 === 0;
+                                    const len     = isMajor ? 18 : isMid ? 11 : 6;
+                                    const opacity = isMajor ? 0.75 : isMid ? 0.45 : 0.22;
+                                    const sw      = isMajor ? 1.5  : isMid ? 1   : 0.8;
+                                    return (
+                                        <line key={i}
+                                            x1={CX} y1="5"
+                                            x2={CX} y2={5 + len}
+                                            stroke={`rgba(255,255,255,${opacity})`}
+                                            strokeWidth={sw}
+                                            transform={`rotate(${angle}, ${CX}, ${CY})`}
+                                        />
+                                    );
+                                })}
+
+                                {/* Números de grado cada 30° */}
+                                {DEGREES.map(deg => (
+                                    <text key={deg}
+                                        x={CX} y="36"
+                                        textAnchor="middle"
+                                        fontSize="8.5"
+                                        fontWeight="600"
+                                        fill="rgba(255,255,255,0.75)"
+                                        fontFamily="Inter,sans-serif"
+                                        transform={`rotate(${deg}, ${CX}, ${CY})`}
+                                    >{deg}</text>
+                                ))}
+
+                                {/* Cardinales */}
+                                <text x={CX} y="88"  textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="white"                   fontFamily="Inter,sans-serif">N</text>
+                                <text x={CX} y="194" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="rgba(255,255,255,0.6)"   fontFamily="Inter,sans-serif">S</text>
+                                <text x="88"  y={CY} textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="rgba(255,255,255,0.6)"   fontFamily="Inter,sans-serif">E</text>
+                                <text x="194" y={CY} textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="rgba(255,255,255,0.6)"   fontFamily="Inter,sans-serif">W</text>
+
+                                {/* Marcador ACRE — triángulo + etiqueta, rota según qiblihAngle */}
                                 {qiblihAngle !== null && (
-                                    <div style={styles.qiblihMarkerArm}>
-                                        <div className="acre-marker-container">
-                                            <FontAwesomeIcon 
-                                                icon={faLocationArrow} 
-                                                className={`acre-arrow ${isAligned ? 'active' : ''}`} 
-                                            />
-                                            <div className={`acre-label ${isAligned ? 'active' : ''}`}>ACRE</div>
-                                        </div>
-                                    </div>
+                                    <g transform={`rotate(${qiblihAngle}, ${CX}, ${CY})`}>
+                                        <polygon
+                                            points={`${CX},28 ${CX-5},42 ${CX+5},42`}
+                                            fill={isAligned ? "#28dc8f" : "#e03030"}
+                                            className={isAligned ? styles.acrePulse : ''}
+                                        />
+                                        <text
+                                            x={CX} y="54"
+                                            textAnchor="middle"
+                                            fontSize="7"
+                                            fontWeight="700"
+                                            letterSpacing="2"
+                                            fill={isAligned ? "#28dc8f" : "rgba(255,255,255,0.65)"}
+                                            fontFamily="Inter,sans-serif"
+                                            style={{ transition: 'fill 0.5s ease' }}
+                                        >ACRE</text>
+                                        {/* Línea del brazo */}
+                                        <line
+                                            x1={CX} y1="44"
+                                            x2={CX} y2={CY - 4}
+                                            stroke={isAligned ? "rgba(40,220,143,0.35)" : "rgba(255,255,255,0.12)"}
+                                            strokeWidth="1"
+                                            strokeDasharray="3 3"
+                                            style={{ transition: 'stroke 0.5s ease' }}
+                                        />
+                                    </g>
                                 )}
-                            </div>
-                        </div>
+                            </g>
 
-                        <div className="text-center mt-4" style={{ zIndex: 2 }}>
-                            <div className="heading-display">
+                            {/* ── ELEMENTOS FIJOS (no rotan) ── */}
+
+                            {/* Cruz central */}
+                            <line x1="126" y1={CY} x2="154" y2={CY} stroke="rgba(255,255,255,0.35)" strokeWidth="1"/>
+                            <line x1={CX} y1="126" x2={CX} y2="154" stroke="rgba(255,255,255,0.35)" strokeWidth="1"/>
+                            <circle cx={CX} cy={CY} r="3.5"
+                                fill={isAligned ? "rgba(40,220,143,0.6)" : "rgba(255,255,255,0.30)"}
+                                stroke={isAligned ? "#28dc8f" : "rgba(255,255,255,0.45)"}
+                                strokeWidth="1"
+                                style={{ transition: 'all 0.8s ease' }}
+                            />
+
+                            {/* Línea de mira debajo del puntero */}
+                            <line x1={CX} y1="14" x2={CX} y2="26"
+                                stroke={isAligned ? "rgba(40,220,143,0.8)" : "rgba(255,255,255,0.5)"}
+                                strokeWidth="1.5"
+                                style={{ transition: 'stroke 0.8s ease' }}
+                            />
+                        </svg>
+
+                        {/* Info inferior */}
+                        <div className={styles.infoArea}>
+                            <div className={`${styles.headingDisplay} ${isAligned ? styles.headingDisplayAligned : ''}`}>
                                 {Math.round(heading)}°
                             </div>
-                            
                             {distance && (
-                                <a 
-                                    href={`https://www.google.com/maps?q=${ACRE_COORDS.lat},${ACRE_COORDS.lng}`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="distance-link"
+                                <a
+                                    href={`https://www.google.com/maps?q=${ACRE_COORDS.lat},${ACRE_COORDS.lng}`}
+                                    target="_blank" rel="noopener noreferrer"
+                                    className={styles.distanceLink}
                                 >
-                                    <div className="distance-badge">
+                                    <div className={`${styles.distanceBadge} ${isAligned ? styles.distanceBadgeAligned : ''}`}>
                                         <FontAwesomeIcon icon={faMapMarkerAlt} />
                                         <span>{distance.toLocaleString()} KM A ACRE</span>
                                     </div>
@@ -230,84 +240,6 @@ const BahiCompass = () => {
                     </>
                 )}
             </div>
-
-            <style>{`
-                .label-ui { letter-spacing: 5px; font-size: 0.6rem; opacity: 0.4; text-transform: uppercase; }
-                .title-ui { font-weight: 200; letter-spacing: 8px; transition: 0.5s; margin-top: 5px; }
-                .title-ui.aligned { color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.5); }
-
-                .btn-activate {
-                    background: none; border: 1px solid rgba(255,255,255,0.2); color: #fff;
-                    padding: 15px 40px; font-size: 0.7rem; letter-spacing: 4px; border-radius: 40px;
-                    transition: 0.4s; backdrop-filter: blur(10px);
-                }
-                .btn-activate:hover { border-color: #00d4ff; background: rgba(0,212,255,0.1); }
-
-                .center-indicator {
-                    position: absolute; top: -15px; width: 2px; height: 30px; 
-                    background: rgba(255,255,255,0.2); z-index: 5; transition: 0.5s;
-                }
-                .center-indicator.active { background: #00d4ff; box-shadow: 0 0 15px #00d4ff; height: 40px; }
-
-                .compass-center-dot {
-                    position: absolute; width: 8px; height: 8px; border-radius: 50%;
-                    background: rgba(255,255,255,0.2); z-index: 10; transition: 0.5s;
-                }
-                .compass-center-dot.active { background: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
-
-                .cardinal-point { position: absolute; font-weight: 600; font-size: 0.8rem; opacity: 0.3; }
-                .n { top: 20px; left: 50%; transform: translateX(-50%); color: #ff4d4d; opacity: 0.8; }
-                .s { bottom: 20px; left: 50%; transform: translateX(-50%); }
-                .e { right: 20px; top: 50%; transform: translateY(-50%); }
-                .w { left: 20px; top: 50%; transform: translateY(-50%); }
-
-                .compass-bg-icon {
-                    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                    font-size: 10rem; opacity: 0.03; color: #fff;
-                }
-
-                .acre-marker-container {
-                    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-                    text-align: center; display: flex; flex-direction: column; align-items: center;
-                }
-                .acre-arrow { 
-                    color: rgba(255,255,255,0.6); font-size: 2rem; transition: 0.5s; 
-                }
-                .acre-arrow.active { color: #00d4ff; filter: drop-shadow(0 0 10px #00d4ff); }
-                .acre-label { font-size: 0.6rem; letter-spacing: 2px; opacity: 0.5; margin-top: 5px; font-weight: bold; transition: 0.5s; }
-                .acre-label.active { opacity: 1; color: #00d4ff; }
-
-                .heading-display { font-size: 3.5rem; font-weight: 100; letter-spacing: -2px; opacity: 0.9; }
-
-                .distance-link { text-decoration: none !important; }
-                .distance-badge {
-                    margin-top: 20px; padding: 12px 28px; border-radius: 40px;
-                    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-                    display: inline-flex; align-items: center; gap: 12px; color: #fff;
-                    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-                .distance-badge:hover { background: rgba(0, 212, 255, 0.1); border-color: #00d4ff; transform: translateY(-2px); }
-
-                .bokeh-bg { position: absolute; width: 100%; height: 100%; z-index:0; pointer-events:none; }
-                .sphere { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.15; animation: float 25s infinite ease-in-out; }
-                .s1 { width: 500px; height: 500px; background: #00d4ff; top: -10%; left: -10%; }
-                .s2 { width: 400px; height: 400px; background: #0033ff; bottom: -5%; right: -5%; animation-delay: -7s; }
-
-                @keyframes float { 
-                    0%, 100% { transform: translate(0,0) scale(1); } 
-                    50% { transform: translate(10%, 15%) scale(1.1); } 
-                }
-
-                .error-msg { color: #ff4d4d; font-size: 0.75rem; margin-top: 25px; letter-spacing: 1px; }
-                .hover-cyan {
-                    transition: color 0.3s ease, text-shadow 0.3s ease;
-                    }
-
-                    .hover-cyan:hover {
-                    color: #00d4ff !important;
-                    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-                    }
-            `}</style>
         </>
     );
 };

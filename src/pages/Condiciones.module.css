@@ -1,0 +1,158 @@
+/* ── Página ── */
+.page {
+    background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+    min-height: 100vh;
+    width: 100%;
+    font-family: var(--font-primary), sans-serif;
+    color: #1e2923;
+    padding-top: env(safe-area-inset-top);
+}
+
+.container {
+    padding: 24px 20px calc(60px + env(safe-area-inset-bottom)) 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ── Botón volver ── */
+.backBtn {
+    background: none;
+    border: none;
+    color: #0f2c1e;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 0;
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
+    margin-bottom: 28px;
+    display: inline-block;
+}
+
+.backBtn:hover { opacity: 1; }
+
+/* ── Encabezado ── */
+.headerBlock {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.title {
+    font-family: var(--font-primary), sans-serif;
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #0f2c1e;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: #276e4a;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+.separator {
+    width: 28px;
+    height: 1px;
+    background: rgba(39, 110, 74, 0.4);
+    margin: 16px auto 0 auto;
+}
+
+/* ── Sección ── */
+.section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 44, 30, 0.06);
+    border-radius: 14px;
+    padding: 22px 20px;
+    margin-bottom: 16px;
+    box-shadow:
+        0 2px 8px rgba(15, 44, 30, 0.04),
+        0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.sectionLabel {
+    display: block;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #276e4a;
+    margin-bottom: 12px;
+}
+
+.sectionTitle {
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f2c1e;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+}
+
+.sectionText {
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #4a5750;
+    margin: 0;
+}
+
+/* ── Bloque de versión / fecha ── */
+.metaRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0 0 0;
+    margin-top: 24px;
+    border-top: 1px solid rgba(15, 44, 30, 0.06);
+}
+
+.metaText {
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a5750;
+    opacity: 0.5;
+}
+
+/* ── Badge sin fines de lucro ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(39, 110, 74, 0.07);
+    border: 1px solid rgba(39, 110, 74, 0.15);
+    border-radius: 20px;
+    padding: 5px 12px;
+    margin: 0 auto 32px auto;
+    display: flex;
+    width: fit-content;
+}
+
+.badgeText {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #276e4a;
+}
+
+.badgeDot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #276e4a;
+    opacity: 0.6;
+    flex-shrink: 0;
+}

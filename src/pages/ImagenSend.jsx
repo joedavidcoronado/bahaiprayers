@@ -1,243 +1,365 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+// ImagenSend.jsx
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { AppContext } from "../context/AppContext";
 import html2canvas from "html2canvas";
-import SideBar from "../components/SideBar";
 import { Filesystem, Directory } from '@capacitor/filesystem';
-
-// Importamos el Share nativo de Capacitor
 import { Share } from '@capacitor/share';
+import styles from "./ImagenSend.module.css";
 
+const getSufijo = (idioma) => idioma === "es" ? "" : `_${idioma}`;
+
+const MIN_CHARS_PER_PAGE = 300; // mínimo de chars para que una página "valga"
+const MAX_CHARS_PER_PAGE = 600; // máximo antes de cortar
+
+/* ── Split inteligente por párrafos ── */
+const buildPages = (oracion) => {
+  const segments = [
+    ...oracion.previo.map(t   => ({ text: t, type: "italic" })),
+    ...oracion.parrafos.map(t => ({ text: t, type: "normal" })),
+    ...oracion.post.map(t     => ({ text: t, type: "italic" })),
+  ].filter(s => s.text?.trim());
+
+  if (!segments.length) return [[]];
+
+  const totalChars = segments.reduce((a, s) => a + s.text.length, 0);
+  if (totalChars <= MAX_CHARS_PER_PAGE) return [segments]; // una sola página
+
+  const pages = [];
+  let current = [], currentChars = 0;
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const wouldExceed = currentChars + seg.text.length > MAX_CHARS_PER_PAGE;
+    const hasMinimum  = currentChars >= MIN_CHARS_PER_PAGE;
+    const isLast      = i === segments.length - 1;
+
+    if (wouldExceed && hasMinimum && !isLast) {
+      pages.push(current);
+      current      = [seg];
+      currentChars = seg.text.length;
+    } else {
+      current.push(seg);
+      currentChars += seg.text.length;
+    }
+  }
+
+  // La última página: si quedó muy corta, la fusionamos con la anterior
+  if (current.length > 0) {
+    if (pages.length > 0 && currentChars < MIN_CHARS_PER_PAGE) {
+      pages[pages.length - 1] = [...pages[pages.length - 1], ...current];
+    } else {
+      pages.push(current);
+    }
+  }
+
+  return pages;
+};
+
+/* ── Poster individual (usado en preview y en captura) ── */
+const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPages, theme, fontFamily, fontSize, styles: s }, ref) => {
+  const isFirst = pageIdx === 0;
+  const isLast  = pageIdx === totalPages - 1;
+  const isMulti = totalPages > 1;
+
+  return (
+    <div
+      ref={ref}
+      className={s.poster}
+      style={{ background: theme.grad, border: theme.border || "none", fontFamily }}
+    >
+      {/* Línea decorativa superior */}
+      <div className={s.posterLineTop} style={{ background: theme.accent }} />
+
+      <div className={s.innerContent}>
+
+        {isFirst && (
+          <div className={s.posterHeader}>
+            <span className={s.cat} style={{ color: theme.accent }}>
+              {oracion.categoria}
+            </span>
+            {oracion.titulo ? (
+              <h2 className={s.titulo} style={{ color: theme.color }}>
+                {oracion.titulo}
+              </h2>
+            ) : null}
+            <div className={s.titleDivider} style={{ background: theme.accent }} />
+          </div>
+        )}
+
+        {!isFirst && isMulti && (
+          <div className={s.continuationMark} style={{ color: theme.accent }}>
+            ✦
+          </div>
+        )}
+
+        <div
+          className={s.bodyText}
+          style={{ fontSize: `${fontSize}rem`, color: theme.color }}
+        >
+          {pageSegments.map((seg, i) => (
+            <p key={i} className={seg.type === "italic" ? s.italic : s.normal}>
+              {seg.text}
+            </p>
+          ))}
+        </div>
+
+        {isLast && (
+          <span className={s.autor} style={{ color: theme.color }}>
+            — {oracion.autor}
+          </span>
+        )}
+
+        {/* Footer */}
+        <div className={s.posterFooter}>
+          <img src="/logo2.png" alt="" className={s.logoImg} />
+          {isMulti && (
+            <span className={s.pageNumFooter} style={{ color: theme.accent }}>
+              {pageIdx + 1} / {totalPages}
+            </span>
+          )}
+        </div>
+
+      </div>
+
+      {/* Línea decorativa inferior */}
+      <div className={s.posterLineBottom} style={{ background: theme.accent }} />
+    </div>
+  );
+});
+
+/* ── Componente principal ── */
 const ImagenSend = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { db } = useContext(AppContext);
-  const [oracion, setOracion] = useState(null);
-  const [loading, setLoading] = useState(false);
-  
-  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
-  const [fontSize, setFontSize] = useState(1.1);
+  const { id }        = useParams();
+  const navigate      = useNavigate();
+  const location      = useLocation();
+  const idioma        = location.state?.idioma || "es";
+  const s             = getSufijo(idioma);
+
+  const { db }        = useContext(AppContext);
+  const [oracion,     setOracion]     = useState(null);
+  const [loading,     setLoading]     = useState(false);
+  const [fontFamily,  setFontFamily]  = useState("'Lora', serif");
+  const [fontSize,    setFontSize]    = useState(1.0);
   const [activeTheme, setActiveTheme] = useState(0);
-  
-  const posterRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const captureRefs = useRef([]);
 
   const themes = [
-    { name: "Noche", grad: "linear-gradient(135deg, #000000 0%, #0a0a2e 100%)", color: "#fff", accent: "#00d4ff" },
-    { name: "Amanecer", grad: "linear-gradient(135deg, #1a0f1f 0%, #4a1d1d 100%)", color: "#f8e1e1", accent: "#ff8e8e" },
-    { name: "Místico", grad: "linear-gradient(135deg, #0f1711 0%, #1a2e1f 100%)", color: "#e0f2f1", accent: "#4db6ac" },
-    { name: "Elegante", grad: "#111", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", accent: "#fff" }
+    { name: "Noche",    grad: "linear-gradient(160deg, #060818 0%, #0d1033 100%)",  color: "#e8eaf6", accent: "#7986cb" },
+    { name: "Amanecer", grad: "linear-gradient(160deg, #1a0a0f 0%, #3d1a22 100%)",  color: "#fce4ec", accent: "#f48fb1" },
+    { name: "Místico",  grad: "linear-gradient(160deg, #071410 0%, #0e2820 100%)",  color: "#e0f2f1", accent: "#80cbc4" },
+    { name: "Elegante", grad: "linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 100%)",  color: "#f5f5f0", accent: "#d4b483", border: "1px solid rgba(212,180,131,0.2)" },
+    { name: "Cielo",    grad: "linear-gradient(160deg, #0d1b2a 0%, #1b2d42 100%)",  color: "#e3f2fd", accent: "#90caf9" },
   ];
 
   const fonts = [
-    { name: "Moderna", family: "'Inter', sans-serif" },
+    { name: "Serena",  family: "'Lora', serif"             },
     { name: "Clásica", family: "'Playfair Display', serif" },
-    { name: "Serena", family: "'Lora', serif" }
+    { name: "Moderna", family: "'Inter', sans-serif"       },
   ];
 
   useEffect(() => {
-    const loadOracion = async () => {
+    const load = async () => {
       if (!db) return;
-      const res = await db.query(`SELECT * FROM oraciones WHERE id = ?`, [id]);
+      const res = await db.query(`SELECT * FROM oraciones${s} WHERE id = ?`, [id]);
       if (res.values.length > 0) {
         const data = res.values[0];
         setOracion({
           ...data,
-          previo: JSON.parse(data.previo || "[]"),
+          previo:   JSON.parse(data.previo   || "[]"),
           parrafos: JSON.parse(data.parrafos || "[]"),
-          post: JSON.parse(data.post || "[]")
+          post:     JSON.parse(data.post     || "[]"),
         });
       }
     };
-    loadOracion();
-  }, [db, id]);
+    load();
+  }, [db, id, s]);
 
+  const pages = useMemo(() => oracion ? buildPages(oracion) : [], [oracion]);
+
+  useEffect(() => { setCurrentPage(0); }, [pages.length]);
+
+  /* ── Compartir ── */
   const handleShare = async () => {
-  if (!posterRef.current) return;
-  setLoading(true);
+    setLoading(true);
+    try {
+      const uris = [];
+      for (let i = 0; i < pages.length; i++) {
+        const el = captureRefs.current[i];
+        if (!el) continue;
+        const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: "#000" });
+        const saved  = await Filesystem.writeFile({
+          path: `oracion_${Date.now()}_${i}.png`,
+          data: canvas.toDataURL("image/png").split(",")[1],
+          directory: Directory.Cache,
+        });
+        uris.push(saved.uri);
+      }
+      await Share.share({
+        title:       oracion.titulo || "Oración",
+        text:        "Compartido desde Oraciones Bahá'ís",
+        files:       uris,
+        dialogTitle: "Compartir Oración",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo compartir.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  try {
-    // 1. Capturar el canvas
-    const canvas = await html2canvas(posterRef.current, {
-      scale: 3,
-      useCORS: true,
-      backgroundColor: "#000",
-    });
-    
-    // 2. Obtener base64 y limpiar el prefijo "data:image/png;base64,"
-    const base64Data = canvas.toDataURL("image/png");
-    const base64String = base64Data.split(',')[1];
+  if (!oracion) return (
+    <div className={styles.loader}>
+      <Spinner animation="grow" style={{ color: "#7986cb" }} />
+    </div>
+  );
 
-    // 3. Guardar el archivo temporalmente en el teléfono
-    const fileName = `oracion_${Date.now()}.png`;
-    const savedFile = await Filesystem.writeFile({
-      path: fileName,
-      data: base64String,
-      directory: Directory.Cache, // Se guarda en la caché para no llenar el cel
-    });
-
-    // 4. Compartir usando la URI del archivo guardado
-    await Share.share({
-      title: oracion.titulo,
-      text: 'Compartido desde Oraciones Bahá\'ís',
-      url: savedFile.uri, // Ahora compartimos un archivo real
-      dialogTitle: 'Compartir Oración',
-    });
-
-  } catch (err) {
-    console.error("Error detallado:", err);
-    alert("No se pudo compartir la imagen. Verifica los permisos.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  if (!oracion) return <div style={s.loader}><Spinner animation="grow" variant="info" /></div>;
+  const theme = themes[activeTheme];
 
   return (
     <>
-      <SideBar />
-      <div style={s.container}>
-        {/* Header con Título central */}
-        <div style={s.header}>
-          <button onClick={() => navigate(-1)} style={s.backBtn}>←</button>
-          <h1 style={s.mainTitle}>COMPARTIR ORACIÓN</h1>
-          <button onClick={handleShare} style={s.shareBtn} disabled={loading}>
-            {loading ? "..." : "ENVIAR"}
+      <div className={styles.container}>
+
+        {/* ── Header ── */}
+        <div className={styles.header}>
+          <button onClick={() => navigate(-1)} className={styles.backBtn}>← Volver</button>
+          <div className={styles.headerCenter}>
+            <h1 className={styles.mainTitle}>COMPARTIR</h1>
+            {pages.length > 1 && (
+              <span className={styles.pageIndicator}>
+                imagen {currentPage + 1} de {pages.length}
+              </span>
+            )}
+          </div>
+          <button onClick={handleShare} className={styles.shareBtn} disabled={loading}>
+            {loading ? <Spinner animation="border" size="sm" style={{ width: 14, height: 14 }} /> : "ENVIAR"}
           </button>
         </div>
 
-        {/* Preview del Poster */}
-        <div style={s.previewArea}>
-          <div 
-            ref={posterRef} 
-            style={{
-              ...s.poster,
-              background: themes[activeTheme].grad,
-              border: themes[activeTheme].border || "none",
-              fontFamily: fontFamily
-            }}
-          >
-            <div style={s.innerContent}>
-              <span style={{...s.cat, color: themes[activeTheme].accent}}>{oracion.categoria}</span>
-              <h2 style={{...s.titulo, color: themes[activeTheme].color}}>{oracion.titulo}</h2>
-              
-              <div style={{...s.bodyText, fontSize: `${fontSize}rem`, color: themes[activeTheme].color}}>
-                {oracion.previo.map((p, i) => <p key={i} style={s.italic}>{p}</p>)}
-                {oracion.parrafos.map((p, i) => <p key={i}>{p}</p>)}
-                {oracion.post.map((p, i) => <p key={i} style={s.italic}>{p}</p>)}
-              </div>
-              
-              <span style={{...s.autor, color: themes[activeTheme].color}}>{oracion.autor}</span>
-              
-              <div style={s.watermark}>ORACIONES BAHÁ'ÍS</div>
-            </div>
-          </div>
-        </div>
+        {/* ── Área de preview ── */}
+        <div className={styles.previewArea}>
 
-        {/* Controles Inferiores */}
-        <div style={s.controls}>
-          <div style={s.controlGroup}>
-            <span style={s.label}>TAMAÑO LETRA</span>
-            <input 
-              type="range" min="0.7" max="1.5" step="0.05" 
-              value={fontSize} onChange={(e) => setFontSize(e.target.value)}
-              style={s.range}
+          {/* Poster visible */}
+          <div className={styles.posterVisible}>
+            <PosterSlide
+              oracion={oracion}
+              pageSegments={pages[currentPage] || []}
+              pageIdx={currentPage}
+              totalPages={pages.length}
+              theme={theme}
+              fontFamily={fontFamily}
+              fontSize={fontSize}
+              styles={styles}
             />
           </div>
 
-          <div style={s.controlGroup}>
-            <span style={s.label}>TEMA</span>
-            <div style={s.chipContainer}>
-              {themes.map((t, i) => (
-                <div 
-                  key={i} 
-                  onClick={() => setActiveTheme(i)}
-                  style={{...s.colorChip, background: t.grad, border: activeTheme === i ? '2px solid #00d4ff' : '1px solid #444'}}
-                />
-              ))}
-            </div>
+          {/* Posters ocultos para captura (todos menos el actual) */}
+          <div className={styles.captureZone}>
+            {pages.map((pageSegs, i) => (
+              <PosterSlide
+                key={i}
+                ref={el => captureRefs.current[i] = el}
+                oracion={oracion}
+                pageSegments={pageSegs}
+                pageIdx={i}
+                totalPages={pages.length}
+                theme={theme}
+                fontFamily={fontFamily}
+                fontSize={fontSize}
+                styles={styles}
+              />
+            ))}
           </div>
 
-          <div style={s.controlGroup}>
-            <span style={s.label}>FUENTE</span>
-            <div style={s.chipContainer}>
-              {fonts.map((f, i) => (
-                <button 
-                  key={i} 
-                  onClick={() => setFontFamily(f.family)}
-                  style={{...s.fontBtn, borderColor: fontFamily === f.family ? '#00d4ff' : '#333'}}
-                >
-                  {f.name}
-                </button>
-              ))}
+          {/* Navegación */}
+          {pages.length > 1 && (
+            <div className={styles.navRow}>
+              <button
+                className={styles.navBtn}
+                onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                disabled={currentPage === 0}
+              >←</button>
+
+              <div className={styles.dots}>
+                {pages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i)}
+                    className={`${styles.dot} ${i === currentPage ? styles.dotActive : ""}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                className={styles.navBtn}
+                onClick={() => setCurrentPage(p => Math.min(pages.length - 1, p + 1))}
+                disabled={currentPage === pages.length - 1}
+              >→</button>
             </div>
+          )}
+        </div>
+
+        {/* ── Controles flotantes ── */}
+        <div className={styles.floatingControls}>
+          <div className={styles.floatingInner}>
+
+            <div className={styles.controlRow}>
+              <span className={styles.label}>LETRA</span>
+              <input
+                type="range" min="0.75" max="1.3" step="0.05"
+                value={fontSize}
+                onChange={e => setFontSize(parseFloat(e.target.value))}
+                className={styles.range}
+              />
+            </div>
+
+            <div className={styles.controlRow}>
+              <span className={styles.label}>TEMA</span>
+              <div className={styles.chipRow}>
+                {themes.map((t, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTheme(i)}
+                    className={`${styles.themeChip} ${activeTheme === i ? styles.themeChipActive : ""}`}
+                    style={{ background: t.grad }}
+                  >
+                    {activeTheme === i && <span className={styles.themeCheck}>✓</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.controlRow}>
+              <span className={styles.label}>FUENTE</span>
+              <div className={styles.chipRow}>
+                {fonts.map((f, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setFontFamily(f.family)}
+                    className={`${styles.fontBtn} ${fontFamily === f.family ? styles.fontBtnActive : ""}`}
+                    style={{ fontFamily: f.family }}
+                  >
+                    {f.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
+
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Lora:ital@0;1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Lora:ital,wght@0,300;0,400;1,300;1,400&display=swap');
         ::-webkit-scrollbar { display: none; }
       `}</style>
     </>
   );
-};
-
-const s = {
-  container: { backgroundColor: "#000", minHeight: "100vh", color: "#fff", display: "flex", flexDirection: "column" },
-  loader: { backgroundColor: "#000", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" },
-  
-  header: { 
-    display: "flex", 
-    justifyContent: "space-between", 
-    alignItems: "center", 
-    padding: "20px", 
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
-    backgroundColor: "rgba(0,0,0,0.8)",
-    backdropFilter: "blur(10px)",
-    position: "sticky",
-    top: 0,
-    zIndex: 100
-  },
-  mainTitle: {
-    fontSize: "0.7rem",
-    letterSpacing: "4px",
-    fontWeight: "600",
-    margin: 0,
-    color: "#fff",
-    textAlign: "center"
-  },
-  backBtn: { background: "none", border: "none", color: "#666", fontSize: "1.2rem", padding: "0 10px" },
-  shareBtn: { backgroundColor: "#00d4ff", border: "none", color: "#000", padding: "6px 18px", borderRadius: "4px", fontSize: "0.65rem", fontWeight: "800", letterSpacing: "1px" },
-  
-  previewArea: { flex: 1, overflowY: "auto", display: "flex", justifyContent: "center", padding: "20px" },
-  poster: {
-    width: "100%",
-    maxWidth: "420px",
-    minHeight: "700px",
-    padding: "50px 35px",
-    borderRadius: "2px",
-    display: "flex",
-    flexDirection: "column",
-    position: "relative",
-    boxShadow: "0 30px 60px rgba(0,0,0,0.8)"
-  },
-  innerContent: { display: "flex", flexDirection: "column", height: "100%" },
-  cat: { fontSize: "0.55rem", letterSpacing: "4px", textTransform: "uppercase", textAlign: "center", marginBottom: "20px", opacity: 0.8 },
-  titulo: { fontSize: "1.3rem", textAlign: "center", fontWeight: "300", letterSpacing: "3px", marginBottom: "40px", textTransform: "uppercase" },
-  bodyText: { lineHeight: "1.9", textAlign: "justify", fontWeight: "300" },
-  italic: { fontStyle: "italic", opacity: 0.8, marginBottom: "15px" },
-  autor: { marginTop: "40px", textAlign: "right", fontSize: "0.85rem", fontWeight: "500" },
-  watermark: { marginTop: "auto", paddingTop: "50px", textAlign: "center", fontSize: "0.45rem", letterSpacing: "6px", opacity: 0.2 },
-
-  controls: { backgroundColor: "#0a0a0a", padding: "25px 20px 40px 20px", borderTop: "1px solid rgba(255,255,255,0.1)" },
-  controlGroup: { marginBottom: "25px" },
-  label: { fontSize: "0.55rem", letterSpacing: "2px", color: "#444", display: "block", marginBottom: "12px", fontWeight: "700" },
-  range: { width: "100%", accentColor: "#00d4ff" },
-  chipContainer: { display: "flex", gap: "15px", alignItems: "center", overflowX: "auto", paddingBottom: "5px" },
-  colorChip: { width: "38px", height: "38px", borderRadius: "50%", cursor: "pointer", flexShrink: 0 },
-  fontBtn: { background: "none", border: "1px solid #333", color: "#fff", fontSize: "0.6rem", padding: "6px 15px", borderRadius: "2px", letterSpacing: "1px", textTransform: "uppercase" }
 };
 
 export default ImagenSend;

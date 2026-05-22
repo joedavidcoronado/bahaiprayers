@@ -1,0 +1,185 @@
+/* ─── FONDO ─── */
+.wrapper {
+  background:
+    radial-gradient(ellipse 90%  80% at 50% 35%, rgba(0,139,118,0.50) 0%, rgba(40,220,143,0.22) 30%, transparent 65%),
+    linear-gradient(180deg,
+      #ebebeb 0%, #ebebeb 10%,
+      #659a72 48%, #b5eab5 74%, #ebebeb 100%
+    );
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  color: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── BOKEHS ─── */
+.bokehContainer {
+  position: absolute;
+  width: 100%; height: 100%;
+  top: 0; left: 0;
+  z-index: 0;
+  filter: blur(48px);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.bokehSphere {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  animation: floatC 8s infinite ease-in-out;
+  opacity: 0;
+}
+
+.sphere1 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,139,118,0.60) 0%, transparent 70%);
+  top: -5%; right: -10%; left: auto;
+  animation-delay: -1s;
+}
+.sphere2 {
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(0,62,72,0.45) 0%, transparent 70%);
+  top: 5%; right: 25%;
+  animation-delay: -3s;
+}
+.sphere3 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(22,198,79,0.38) 0%, transparent 70%);
+  top: 12%; right: 40%;
+  animation-delay: -5s;
+}
+
+/* ─── BOTÓN VOLVER ─── */
+.backBtn {
+  position: relative; z-index: 10;
+  background: none; border: none;
+  color: rgba(18, 39, 15, 0.884);
+  font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
+  font-family: inherit; cursor: pointer; padding: 0;
+  margin-bottom: 30px;
+  transition: color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.backBtn:active { color: #fff; }
+
+/* ─── CABECERA ─── */
+.heading {
+  position: relative; z-index: 5;
+  font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase;
+  color: rgba(255,255,255,0.85); font-weight: 600; display: block;
+}
+
+.sacredText {
+  position: relative; z-index: 5;
+  font-size: clamp(1.8rem, 10vw, 2.4rem);
+  font-weight: 200; letter-spacing: 10px;
+  margin: 8px 0 28px; color: #003E48;
+  transition: color 1.5s ease, text-shadow 1.5s ease;
+  text-transform: uppercase;
+}
+.sacredTextAligned {
+  color: #008B76;
+  text-shadow: 0 0 20px rgba(0,139,118,0.35);
+}
+
+/* ─── SVG BRÚJULA ─── */
+.compassSvg {
+  position: relative; z-index: 5;
+  filter: drop-shadow(0 8px 32px rgba(0,0,0,0.22));
+  transition: filter 1s ease;
+}
+.compassSvgAligned {
+  filter:
+    drop-shadow(0 0 16px rgba(40,220,143,0.45))
+    drop-shadow(0 8px 32px rgba(0,0,0,0.22));
+}
+
+/* Pulso del triángulo de Acre al alinearse */
+.acrePulse {
+  animation: acrePulse 1.4s ease-in-out infinite;
+}
+@keyframes acrePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── ACTIVACIÓN ─── */
+.activateArea {
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column; align-items: center;
+  margin-top: 60px;
+}
+.activateBtn {
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.55);
+  color: #003E48;
+  padding: 16px 44px; font-size: 0.65rem; letter-spacing: 5px;
+  text-transform: uppercase; font-family: inherit;
+  border-radius: 40px; cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 0.4s ease, border-color 0.4s ease;
+  -webkit-tap-highlight-color: transparent;
+  font-weight: 700;
+}
+.activateBtn:active {
+  background: rgba(0,139,118,0.20);
+  border-color: #008B76;
+}
+.errorMsg {
+  color: #c0392b; font-size: 0.7rem;
+  letter-spacing: 1px; margin-top: 25px; text-align: center;
+}
+
+/* ─── INFO INFERIOR ─── */
+.infoArea {
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column; align-items: center;
+  margin-top: 28px;
+}
+.headingDisplay {
+  font-size: 3.8rem; font-weight: 100;
+  letter-spacing: -3px; color: #003E48;
+  line-height: 1; text-align: center;
+  transition: color 1s ease, text-shadow 1s ease;
+}
+.headingDisplayAligned {
+  color: #008B76;
+  text-shadow: 0 0 15px rgba(0,139,118,0.3);
+}
+
+.distanceLink { text-decoration: none !important; }
+
+.distanceBadge {
+  margin-top: 18px; padding: 13px 26px; border-radius: 40px;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.55);
+  display: inline-flex; align-items: center; gap: 10px;
+  color: #003E48; font-size: 0.62rem; letter-spacing: 3px;
+  text-transform: uppercase; font-weight: 700;
+  transition: border-color 0.5s ease, background 0.5s ease;
+}
+.distanceBadgeAligned {
+  border-color: rgba(40,220,143,0.6);
+  background: rgba(40,220,143,0.15);
+}
+
+/* ─── KEYFRAMES ─── */
+@keyframes floatC {
+  0%,  100% { transform: translate(0,0);      opacity: 0.55; }
+  25%        { transform: translate(-3vw,3vh); opacity: 1;    }
+  50%        { transform: translate(-6vw,1vh); opacity: 0.80; }
+  75%        { transform: translate(-2vw,5vh); opacity: 1;    }
+}

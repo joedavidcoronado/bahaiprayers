@@ -6,24 +6,26 @@ import { AppContext } from "../context/AppContext";
 import styles from "./Reflexiones.module.css";
 
 const Reflexiones = () => {
-    const { id }       = useParams();
-    const { db }       = useContext(AppContext);
-    const navigate     = useNavigate();
+    const { id }      = useParams();
+    const { db }      = useContext(AppContext);
+    const navigate    = useNavigate();
 
-    const [parrafo,           setParrafo]           = useState(null);
-    const [notas,             setNotas]             = useState([]);
-    const [newNote,           setNewNote]           = useState("");
-    const [loading,           setLoading]           = useState(true);
-    const [showEditModal,     setShowEditModal]     = useState(false);
-    const [notaAEditar,       setNotaAEditar]       = useState(null);
-    const [contenidoEditado,  setContenidoEditado]  = useState("");
+    const [parrafo,          setParrafo]          = useState(null);
+    const [notas,            setNotas]            = useState([]);
+    const [newNote,          setNewNote]          = useState("");
+    const [loading,          setLoading]          = useState(true);
+    const [showEditModal,    setShowEditModal]    = useState(false);
+    const [notaAEditar,      setNotaAEditar]      = useState(null);
+    const [contenidoEditado, setContenidoEditado] = useState("");
+    const [expandido,        setExpandido]        = useState(false);
 
-    /* Carga de datos */
     const cargarDatos = async () => {
         if (!db) return;
         setLoading(true);
         try {
-            const resP = await db.query("SELECT * FROM biblioteca_parrafos WHERE id = ?", [id]);
+            const resP = await db.query(
+                "SELECT * FROM biblioteca_parrafos WHERE id = ?", [id]
+            );
             setParrafo(resP.values[0]);
 
             const resN = await db.query(
@@ -37,7 +39,6 @@ const Reflexiones = () => {
 
     useEffect(() => { if (db) cargarDatos(); }, [db, id]);
 
-    /* CRUD notas */
     const guardarNota = async () => {
         if (!newNote.trim()) return;
         const fecha = new Date().toLocaleString();
@@ -49,8 +50,15 @@ const Reflexiones = () => {
         cargarDatos();
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            guardarNota();
+        }
+    };
+
     const eliminarNota = async (notaId) => {
-        if (!window.confirm("¿Estás seguro de que deseas eliminar este pensamiento?")) return;
+        if (!window.confirm("¿Eliminar este pensamiento?")) return;
         await db.run("DELETE FROM biblioteca_notas WHERE id = ?", [notaId]);
         cargarDatos();
     };
@@ -72,10 +80,9 @@ const Reflexiones = () => {
         cargarDatos();
     };
 
-    /* Loading state */
     if (loading) return (
         <div className={`${styles.spinnerPage} d-flex justify-content-center align-items-center`}>
-            <Spinner variant="info" />
+            <Spinner animation="grow" style={{ color: "#276e4a" }} />
         </div>
     );
 
@@ -88,81 +95,108 @@ const Reflexiones = () => {
 
                     {/* Volver */}
                     <button className={styles.backBtn} onClick={() => navigate(-1)}>
-                        ← VOLVER A LA LECTURA
+                        ← Volver a la lectura
                     </button>
 
-                    {/* Contexto del párrafo */}
-                    <div className="mb-5">
+                    {/* ── Párrafo de referencia ── */}
+                    <div className={styles.parrafoCard}>
                         <small className={styles.parrafoLabel}>
-                            Párrafo en reflexión {parrafo?.num_parrafo?.toString().padStart(2, '0')}
+                            Párrafo {(parrafo?.num_parrafo - 1)?.toString().padStart(2, '0')}
                         </small>
-                        <p className={styles.parrafoTexto}>"{parrafo?.texto}"</p>
-                    </div>
-
-                    <hr className={styles.hr} />
-
-                    {/* Input de nueva nota */}
-                    <div className="mb-5">
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Anota tu reflexión aquí..."
-                            className={styles.textarea}
-                            value={newNote}
-                            onChange={(e) => setNewNote(e.target.value)}
-                        />
-                        <Button
-                            variant="outline-info"
-                            className={`w-100 mt-3 ${styles.saveBtn}`}
-                            onClick={guardarNota}
+                        <p className={`${styles.parrafoTexto} ${expandido ? '' : styles.collapsed}`}>
+                            "{parrafo?.texto}"
+                        </p>
+                        <button
+                            className={styles.leerMasBtn}
+                            onClick={() => setExpandido(!expandido)}
                         >
-                            GUARDAR PENSAMIENTO
-                        </Button>
+                            {expandido ? '↑ Contraer' : 'Leer más →'}
+                        </button>
                     </div>
 
-                    {/* Listado de notas */}
-                    <div>
-                        {notas.map((n) => (
-                            <div key={n.id} className={`mb-4 p-4 ${styles.noteCard}`}>
-                                <div className="d-flex justify-content-between align-items-center mb-3">
-                                    <div className={styles.noteFecha}>{n.fecha_creacion}</div>
-                                    <div>
-                                        <button
-                                            className={styles.noteActionBtn}
-                                            style={{ marginRight: "15px" }}
-                                            onClick={() => abrirEdicion(n)}
-                                        >
-                                            EDITAR
-                                        </button>
-                                        <button
-                                            className={`${styles.noteActionBtn} ${styles.noteActionBtnDanger}`}
-                                            onClick={() => eliminarNota(n.id)}
-                                        >
-                                            ELIMINAR
-                                        </button>
+                    {/* ── Contador ── */}
+                    <div className={styles.notasCounter}>
+                        <span className={styles.notasCounterLabel}>Tus pensamientos</span>
+                        <span className={styles.notasCounterBadge}>{notas.length}</span>
+                    </div>
+
+                    {/* ── Timeline de notas ── */}
+                    {notas.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyStateIcon}>✦</div>
+                            <p className={styles.emptyMsg}>Aún no hay reflexiones guardadas</p>
+                        </div>
+                    ) : (
+                        <div className={styles.timeline}>
+                            {notas.map((n, index) => (
+                                <div
+                                    key={n.id}
+                                    className={styles.timelineItem}
+                                    style={{ animationDelay: `${index * 0.06}s` }}
+                                >
+                                    <div className={styles.timelineDot} />
+                                    <div className={styles.noteCard}>
+                                        <div className={styles.noteCardTop}>
+                                            <span className={styles.noteFecha}>{n.fecha_creacion}</span>
+                                            <div className={styles.noteActions}>
+                                                <button
+                                                    className={styles.noteActionBtn}
+                                                    onClick={() => abrirEdicion(n)}
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button
+                                                    className={`${styles.noteActionBtn} ${styles.noteActionBtnDanger}`}
+                                                    onClick={() => eliminarNota(n.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p className={styles.noteTexto}>{n.comentario}</p>
                                     </div>
                                 </div>
-                                <p className={styles.noteTexto}>{n.comentario}</p>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
 
                 </Container>
             </div>
 
-            {/* Modal editar nota */}
+            {/* ── Input flotante ── */}
+            <div className={styles.floatingInputBar}>
+                <div className={styles.floatingInputInner}>
+                    <Form.Control
+                        as="textarea"
+                        rows={1}
+                        placeholder="Anota tu reflexión..."
+                        className={styles.floatingTextarea}
+                        value={newNote}
+                        onChange={(e) => setNewNote(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button className={styles.floatingSendBtn} onClick={guardarNota}>
+                        <svg viewBox="0 0 24 24">
+                            <line x1="12" y1="19" x2="12" y2="5" />
+                            <polyline points="5 12 12 5 19 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            {/* ── Modal editar ── */}
             <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
                 <div className={styles.modalWrapper}>
                     <Modal.Header className={styles.modalHeader}>
-                        <Modal.Title className={styles.modalTitle}>EDITAR PENSAMIENTO</Modal.Title>
+                        <Modal.Title className={styles.modalTitle}>Editar pensamiento</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body className={styles.modalBody}>
                         <Form.Control
                             as="textarea"
                             rows={5}
                             value={contenidoEditado}
                             onChange={(e) => setContenidoEditado(e.target.value)}
-                            className={styles.textarea}
+                            className={styles.modalTextarea}
                         />
                     </Modal.Body>
                     <Modal.Footer className={styles.modalFooter}>
@@ -171,14 +205,13 @@ const Reflexiones = () => {
                             className={styles.modalCancelBtn}
                             onClick={() => setShowEditModal(false)}
                         >
-                            CANCELAR
+                            Cancelar
                         </Button>
                         <Button
-                            variant="outline-info"
                             className={styles.modalSaveBtn}
                             onClick={guardarEdicion}
                         >
-                            ACTUALIZAR
+                            Actualizar
                         </Button>
                     </Modal.Footer>
                 </div>

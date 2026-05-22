@@ -1,251 +1,400 @@
-/* ── Página principal ──────────────────────────────────────── */
+/* ── Contenedor Principal (Layout) ── */
 .mainContainer {
-    background-color: #000;
+    background: #98c1af;
     min-height: 100vh;
     width: 100%;
-    color: #fff;
-    padding: 80px 0;
-    font-family: 'Inter', sans-serif;
+    color: #1e2923;
+    font-family: var(--font-primary), sans-serif;
     position: relative;
     overflow: hidden;
+    padding: 0;
 }
 
-/* ── Bokeh ─────────────────────────────────────────────────── */
+/* ── 1/5 de Pantalla: Cuadrado Verde Editorial ── */
+.topHeader {
+    width: 100%;
+    height: 20vh;
+    background: #7FAF9B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top);
+}
+
+/* ── Bokeh Decorativo ── */
 .bokehContainer {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    filter: blur(50px);
-    opacity: 0.6;
+    inset: 0;
+    z-index: 1;
+    filter: blur(25px);
     pointer-events: none;
 }
 
 .bokeh {
     position: absolute;
     border-radius: 50%;
+    animation: float 10s infinite ease-in-out;
+    opacity: 0.65;
     mix-blend-mode: screen;
-    animation: float 25s infinite ease-in-out;
-    opacity: 0;
 }
 
 .p1 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(0,212,255,0.3) 40%, transparent 70%);
-    top: -10%;
-    left: -10%;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(40, 220, 142, 0.8) 0%, transparent 75%);
+    top: -20px; right: -20px;
+    animation-delay: -1s;
 }
 
 .p2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(0,60,255,0.4) 0%, transparent 70%);
-    bottom: -10%;
-    right: -10%;
-    animation-delay: -5s;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 75%);
+    bottom: -20px; left: -10px;
+    animation-delay: -3s;
 }
 
 .p3 {
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-    top: 40%;
-    right: 10%;
-    animation-delay: -2s;
+    width: 110px; height: 110px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 75%);
+    top: 5%; left: 30%;
+    animation-delay: -5s;
 }
 
 .p4 {
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, rgba(0,255,242,0.4) 0%, transparent 70%);
-    bottom: 20%;
-    left: 10%;
-    animation-delay: -10s;
+    width: 90px; height: 90px;
+    background: radial-gradient(circle, rgba(26, 69, 29, 0.8) 0%, transparent 75%);
+    bottom: 5px; right: 25%;
+    animation-delay: -7s;
 }
 
 @keyframes float {
-    0%   { transform: translate(0, 0) scale(1);         opacity: 0;   }
-    20%  {                                               opacity: 0.5; }
-    50%  { transform: translate(10vw, -5vh) scale(1.1); opacity: 0.7; }
-    100% { transform: translate(-2vw, 2vh) scale(1);    opacity: 0;   }
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(-16px, 16px) scale(1.12); }
 }
 
-/* ── Título ────────────────────────────────────────────────── */
+/* Título Premium del Header */
 .title {
-    font-size: clamp(1.2rem, 4vw, 1.8rem);
-    font-weight: 200;
+    font-family: var(--font-primary), sans-serif;
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    font-weight: 700;
     text-align: center;
-    letter-spacing: 8px;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    margin-bottom: 40px;
-    color: #ffffff;
+    color: #f7f5f0;
     z-index: 2;
     position: relative;
+    margin: 0;
 }
 
-/* ── Card de mensaje ───────────────────────────────────────── */
-.card {
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 30px 20px;
-    text-align: center;
-    background-color: rgba(255,255,255,0.02);
-    backdrop-filter: blur(15px);
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border-radius: 4px;
+/* ── Contenedor Inferior (Bottom Sheet Curvo) ── */
+.bottomSheet {
+    background: linear-gradient(180deg, #f7f5f0 0%, #eeeae0 100%);
+    border-top-left-radius: 36px;
+    border-top-right-radius: 0px;
+    min-height: 80vh;
+    position: relative;
     z-index: 2;
-    margin-bottom: 20px;
+    padding: 24px 16px calc(40px + env(safe-area-inset-bottom)) 16px;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.card:hover {
-    background-color: rgba(255,255,255,0.08);
-    border-color: rgba(0, 212, 255, 0.5);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+.sectionLabelAboveSearch {
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: #4a5750;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+/* ── Tarjetas en 1 Sola Columna (Full Width) ── */
+.card {
+    border: 1px solid rgba(15, 44, 30, 0.04);
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-radius: 14px;
+    box-shadow: 
+        0 4px 12px rgba(15, 44, 30, 0.03),
+        0 1px 0 rgba(255, 255, 255, 0.9) inset;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.card:active {
+    transform: scale(0.98);
+    background: #ffffff;
+}
+
+.cardHeaderFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .cardFecha {
-    color: #00d4ff;
-    letter-spacing: 3px;
-    font-size: 0.55rem;
+    color: #276e4a;
+    letter-spacing: 0.12em;
+    font-size: 0.58rem;
     text-transform: uppercase;
+    font-weight: 700;
+}
+
+.cardAutor {
+    color: #4a5750;
+    letter-spacing: 0.08em;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    opacity: 0.8;
 }
 
 .cardTitulo {
-    letter-spacing: 2px;
-    font-size: 1rem;
+    font-family: var(--font-primary), sans-serif;
+    letter-spacing: 0.03em;
+    font-size: 0.88rem;
+    color: #0f2c1e;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.4;
+    text-align: left;
 }
 
-/* ── Botón volver ──────────────────────────────────────────── */
+/* ── Botón Volver Minimalista ── */
 .backBtn {
     background: none;
     border: none;
-    color: #666;
-    font-size: 0.65rem;
-    letter-spacing: 3px;
+    color: #0f2c1e;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    z-index: 3;
-    position: relative;
+    font-weight: 700;
     cursor: pointer;
-    display: block;
-    margin: 0 auto 40px auto;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-    padding: 0;
+    display: inline-block;
+    padding: 4px 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
 .backBtn:hover {
-    color: #00d4ff;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+    opacity: 1;
 }
 
-/* ── Vista de lectura ──────────────────────────────────────── */
+/* ── Vista de Lectura Editorial ── */
 .readingWrapper {
-    max-width: 780px;
+    max-width: 680px;
     margin: 0 auto;
+    padding-top: 8px;
 }
 
 .readingTitle {
-    letter-spacing: 4px;
-    line-height: 1.6;
-    font-size: 1.4rem;
+    font-family: var(--font-primary), sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    font-size: 1.35rem;
+    color: #0f2c1e;
+    font-weight: 800;
+    margin-bottom: 24px;
+    text-align: center;
 }
 
-/* ── Subtítulo de párrafo (luxury gray) ────────────────────── */
 .luxuryGray {
-    color: #888;
-    font-size: 0.7rem;
-    letter-spacing: 5px;
+    color: #276e4a;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     display: block;
-    margin-bottom: 12px;
-    border-left: 2px solid rgba(0, 212, 255, 0.5);
-    padding-left: 15px;
-    font-weight: 300;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-family: var(--font-primary), sans-serif;
 }
 
-/* ── Número de párrafo ─────────────────────────────────────── */
+.separator {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(15, 44, 30, 0.08), transparent);
+    margin: 16px 0 20px 0;
+}
+
+/* Filas de párrafos interactivos */
+.paragraphsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.paraRow {
+    display: flex;
+    align-items: flex-start;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
 .paraNum {
-    color: #00d4ff;
-    font-size: 1.1rem;
-    margin-right: 10px;
+    color: #276e4a;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 4px;
+    min-width: 36px;
+    display: inline-block;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    opacity: 0.8;
-    font-weight: 400;
-    transition: 0.3s;
-    min-width: 30px;
 }
 
-.paraNum:hover {
-    opacity: 1;
-    transform: scale(1.1);
-    color: #fff;
-}
-
-/* ── Texto de párrafo ──────────────────────────────────────── */
 .paraTexto {
-    font-size: 1.05rem;
-    line-height: 1.9;
-    color: rgba(255,255,255,0.85);
-    font-weight: 300;
-    cursor: pointer;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: #2e3b34;
+    font-weight: 400;
+    margin: 0;
     text-align: justify;
-    transition: color 0.3s ease;
+    flex: 1;
+    cursor: pointer;
 }
 
-.paraTexto:hover {
-    color: #fff;
+/* Spinner */
+.spinnerWrapper {
+    padding: 50px 0;
+    text-align: center;
+    width: 100%;
 }
 
-/* ── Modal ─────────────────────────────────────────────────── */
+/* ── Modal de Edición Organismo Premium ── */
 .modalContent {
-    background-color: #111;
-    color: #fff;
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 4px;
+    background-color: #f7f5f0 !important;
+    border: 1px solid rgba(15, 44, 30, 0.08) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .modalHeader {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(15, 44, 30, 0.06) !important;
+    padding: 16px 24px !important;
 }
 
 .modalTitle {
-    font-size: 1rem;
-    letter-spacing: 2px;
-    font-weight: 300;
-}
-
-.modalFooter {
-    border-top: none;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #0f2c1e;
 }
 
 .modalInput {
-    background-color: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(15, 44, 30, 0.1) !important;
+    color: #0f2c1e !important;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.9rem;
+    border-radius: 8px !important;
+    padding: 12px !important;
 }
 
 .modalInput:focus {
-    box-shadow: none !important;
-    border-color: #00d4ff !important;
-    background-color: rgba(255,255,255,0.1) !important;
-    color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(39, 110, 74, 0.15) !important;
+    border-color: #276e4a !important;
+    background-color: #ffffff !important;
+}
+
+.modalFooter {
+    border-top: none !important;
+    padding: 12px 24px 20px 24px !important;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .modalCancelBtn {
-    color: #888;
-    text-decoration: none;
+    color: #4a5750 !important;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    text-decoration: none !important;
 }
 
 .modalSaveBtn {
-    border-radius: 2px;
-    letter-spacing: 1px;
-    font-size: 0.8rem;
+    background: none !important;
+    background-color: #0f2c1e !important;
+    border-color: #0f2c1e !important;
+    color: #f7f5f0 !important;
+    border-radius: 8px !important;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 8px 16px !important;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────── */
-::-webkit-scrollbar       { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 10px; }
+.modalSaveBtn:hover {
+    background-color: #1a452e !important;
+    color: #ffffff !important;
+}
+
+/* Mensajes vacíos */
+.emptyMsg {
+    color: #7a8a81;
+    font-family: var(--font-primary), sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 40px 0;
+    margin: 0;
+}
+
+/* Contenedor del header de la card para balancear los elementos */
+.cardHeaderFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Botón de descarga interactivo dentro de la Card */
+.cardDownloadBtn {
+    background: none;
+    border: none;
+    color: #276e4a; /* Mismo color verde institucional de alta gama */
+    padding: 4px 8px;
+    cursor: pointer;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 5px;
+}
+
+/* Efectos nativos táctiles */
+.cardDownloadBtn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background-color: rgba(39, 110, 74, 0.08); /* Sutil feedback premium al pulsar */
+}
+
+.cardDownloadBtn:active {
+    transform: scale(0.95);
+}
+
+/* Resets locales */
+:global(.row) {
+    margin: 0 !important;
+}

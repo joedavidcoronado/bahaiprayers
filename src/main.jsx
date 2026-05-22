@@ -18,7 +18,8 @@ import Biblioteca from './pages/Biblioteca.jsx';
 import Reflexiones from './pages/Reflexiones.jsx';
 import Configuracion from './pages/Configuracion.jsx';
 import ImagenSend from './pages/ImagenSend.jsx';
-import Prueba from './pages/Prueba.jsx';
+import WelcomeAnimation from './pages/WelcomeAnimation.jsx';
+import Condiciones from './pages/Condiciones.jsx';
 
 // Componente para gestionar la navegación física de Android
 const AppNavigationHandler = () => {
@@ -66,9 +67,10 @@ createRoot(document.getElementById('root')).render(
         {/* El manejador DEBE estar dentro del Router para poder usar useNavigate y useLocation */}
         <AppNavigationHandler />
         <Routes>
-          <Route path="/" element={<Principal />} />
+          <Route path="/" element={<WelcomeAnimation />} />
+          <Route path="/principal" element={<Principal />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/favoritos" element={<Prueba />} />
+          <Route path="/favoritos" element={<Favoritos />} />
           <Route path="/oraciones" element={<OracionesList />} />
           <Route path="/contador" element={<Contador />} />
           <Route path="/compass" element={<BahiCompass />} />
@@ -77,7 +79,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/reflexiones/:id" element={<Reflexiones />} />
           <Route path="/config" element={<Configuracion />} />
           <Route path="/imagen-send/:id" element={<ImagenSend />} />
-          
+          <Route path="/condiciones" element={<Condiciones />} />
         </Routes>
       </HashRouter>
     </AppProvider>

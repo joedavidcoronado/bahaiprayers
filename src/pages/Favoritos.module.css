@@ -1,0 +1,213 @@
+/* STREAMING_CHUNK: Configurando el contenedor principal y layout de la página */
+.mainContainer {
+background: #98c1af;
+min-height: 100vh;
+width: 100%;
+color: #1e2923;
+font-family: var(--font-primary), sans-serif;
+position: relative;
+overflow: hidden;
+padding: 0;
+}
+
+/* STREAMING_CHUNK: Estilizando el encabezado editorial del 20% de la pantalla */
+.topHeader {
+width: 100%;
+height: 20vh; /* 1/5 exacto de la pantalla */
+background: #7FAF9B;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+overflow: hidden;
+padding-top: env(safe-area-inset-top);
+}
+
+/* STREAMING_CHUNK: Creando el contenedor de luces bokeh definidas y rápidas */
+.bokehContainer {
+position: absolute;
+inset: 0;
+z-index: 1;
+filter: blur(25px);
+pointer-events: none;
+}
+
+.bokeh {
+position: absolute;
+border-radius: 50%;
+mix-blend-mode: screen;
+}
+
+/* Esfera 1: Menta brillante veloz */
+.p1 {
+width: 140px; height: 140px;
+background: radial-gradient(circle, rgba(40, 220, 142, 0.83) 0%, transparent 75%);
+top: -20px; right: -20px;
+animation: float1 4.5s infinite ease-in-out;
+}
+
+/* Esfera 2: Blanco crema de destello rápido */
+.p2 {
+width: 120px; height: 120px;
+background: radial-gradient(circle, rgba(255, 255, 255, 0.59) 0%, transparent 75%);
+bottom: -20px; left: -10px;
+animation: float2 3.8s infinite ease-in-out;
+animation-delay: -0.5s;
+}
+
+/* Esfera 3: Blanco puro radiante rápido */
+.p3 {
+width: 110px; height: 110px;
+background: radial-gradient(circle, rgba(255, 255, 255, 0.76) 0%, transparent 75%);
+top: 5%; left: 30%;
+animation: float3 5.2s infinite ease-in-out;
+}
+
+/* Esfera 4: Oscuridad de contraste rápida */
+.p4 {
+width: 90px; height: 90px;
+background: radial-gradient(circle, rgba(26, 69, 29, 0.84) 0%, transparent 75%);
+bottom: 5px; right: 25%;
+animation: float4 4s infinite ease-in-out;
+animation-delay: -1s;
+}
+
+/* STREAMING_CHUNK: Definiendo las físicas veloces y orgánicas de los keyframes */
+@keyframes float1 {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50%      { transform: translate(-30px, 20px) scale(1.15); }
+}
+
+@keyframes float2 {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50%      { transform: translate(25px, -25px) scale(1.2); }
+}
+
+@keyframes float3 {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50%      { transform: translate(-20px, -15px) scale(1.1); }
+}
+
+@keyframes float4 {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50%      { transform: translate(15px, 25px) scale(1.25); }
+}
+
+/* Título de la pantalla */
+.title {
+font-family: var(--font-primary);
+font-size: clamp(1rem, 4vw, 1.3rem);
+font-weight: 700;
+text-align: center;
+letter-spacing: 0.32em;
+text-transform: uppercase;
+color: #f7f5f0;
+z-index: 2;
+position: relative;
+margin: 0;
+}
+
+/* STREAMING_CHUNK: Estilizando el Bottom Sheet con curvatura premium */
+.bottomSheet {
+background: linear-gradient(180deg, #f7f5f0 0%, #eeeae0 100%);
+border-top-left-radius: 36px;
+border-top-right-radius: 0px;
+min-height: 80vh;
+position: relative;
+z-index: 2;
+padding: 24px 12px calc(40px + env(safe-area-inset-bottom)) 12px;
+box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Etiqueta minimalista que reemplaza al buscador */
+.sectionLabelAboveList {
+font-family: var(--font-primary);
+font-size: 0.65rem;
+letter-spacing: 0.2em;
+color: #4a5750;
+text-transform: uppercase;
+text-align: center;
+margin-bottom: 24px;
+font-weight: 800;
+}
+
+/* STREAMING_CHUNK: Estilizando las tarjetas compactas de favoritos */
+.prayerCard {
+border: 1px solid rgba(15, 44, 30, 0.03);
+padding: 16px;
+background: rgba(255, 255, 255, 0.85);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+border-radius: 14px;
+cursor: pointer;
+transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+height: 100%;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+box-shadow:
+0 2px 8px rgba(15, 44, 30, 0.02),
+0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.prayerCard:active {
+transform: scale(0.96);
+background: #ffffff;
+}
+
+.categoryTag {
+font-family: var(--font-primary);
+font-size: 0.58rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: #276e4a;
+margin-bottom: 8px;
+font-weight: 700;
+opacity: 0.85;
+}
+
+.prayerTitle {
+font-family: var(--font-primary);
+font-size: 0.72rem;
+letter-spacing: 0.05em;
+color: #16402b;
+font-weight: 700;
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+
+.excerpt {
+font-family: var(--font-secondary);
+color: #4e5c54;
+margin: 0;
+font-style: italic;
+line-height: 1.5;
+font-size: 0.82rem;
+display: -webkit-box;
+-webkit-line-clamp: 3;
+-webkit-box-orient: vertical;
+overflow: hidden;
+flex: 1;
+}
+
+/* STREAMING_CHUNK: Estilos del mensaje cuando no hay registros guardados */
+.emptyMessage {
+color: #7a8a81;
+font-family: var(--font-primary);
+font-size: 0.65rem;
+letter-spacing: 0.15em;
+text-align: center;
+text-transform: uppercase;
+padding: 60px 0;
+width: 100%;
+}
+
+.spinnerWrapper {
+padding: 40px;
+text-align: center;
+width: 100%;
+}
+
+:global(.row) {
+margin: 0 !important;
+}

@@ -2,15 +2,12 @@ import SplashScreen from "../components/SplashScreen";
     import SideBar from "../components/SideBar";
 import { useNavigate } from "react-router-dom";
 
-const Prueba = () => {
+const WelcomeAnimation = () => {
 const navigate = useNavigate();
 
   return (
-    <>
-      <SideBar />
-      <SplashScreen onFinish={() => navigate("/")} />
-    </>
+      <SplashScreen onFinish={() => navigate("/principal")} />
   );
 };
 
-export default Prueba;
+export default WelcomeAnimation;

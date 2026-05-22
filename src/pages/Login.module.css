@@ -1,143 +1,248 @@
-/* ── Wrapper principal ─────────────────────────────────────── */
+/* ── Wrapper ── */
 .wrapper {
+    background:
+        radial-gradient(ellipse 160% 55% at 50% -8%,  rgba(255,255,255,0.12) 0%, transparent 52%),
+        radial-gradient(ellipse 90%  80% at 50% 35%,  rgba(0, 139, 118, 0.55) 0%, rgba(40,220,143,0.25) 30%, transparent 65%),
+        radial-gradient(ellipse 60%  40% at 50% 20%,  rgba(40, 220, 143, 0.18) 0%, transparent 60%),
+        linear-gradient(180deg,
+            #e8e4dc 0%,
+            #c2bfb4 12%,
+            #6b7a6a 28%,
+            #1a2e1f 50%,
+            #050a05 75%,
+            #000000 100%
+        );
     min-height: 100vh;
+    width: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background-color: #000;
-    padding: 20px;
+    justify-content: center;
+    flex-direction: column;
     position: relative;
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-primary);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ── Bokeh / esferas ───────────────────────────────────────── */
-.bokeh {
+/* ── Bokeh ── */
+.bokehContainer {
     position: absolute;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 0;
+    filter: blur(45px);
+    pointer-events: none;
 }
 
-.sphere {
+.bokeh {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.2;
+    animation: float 8s infinite ease-in-out;
+    opacity: 0;
 }
 
-.s1 {
-    width: 300px;
-    height: 300px;
-    background: #00d4ff;
+.p1 {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle,
+        rgba(40, 220, 143, 0.85) 0%,
+        rgba(0, 139, 118, 0.5) 45%,
+        transparent 70%
+    );
     top: -5%;
-    right: -5%;
+    right: -15%;
+    animation-delay: -1s;
 }
 
-.s2 {
-    width: 400px;
-    height: 400px;
-    background: #0033ff;
-    bottom: -10%;
-    left: -10%;
-    opacity: 0.1;
+.p2 {
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(192, 192, 192, 0.65) 50%,
+        transparent 70%
+    );
+    top: 5%;
+    right: 25%;
+    animation-delay: -3s;
 }
 
-/* ── Card ──────────────────────────────────────────────────── */
-.card {
-    max-width: 400px;
+.p3 {
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle,
+        rgba(162, 224, 198, 0.8) 0%,
+        rgba(82, 126, 113, 0.72) 35%,
+        transparent 70%
+    );
+    top: 12%;
+    right: 35%;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    0%,  100% { transform: translate(0, 0);      opacity: 0.5;  }
+    25%       { transform: translate(-3vw, 3vh); opacity: 1;    }
+    50%       { transform: translate(-6vw, 1vh); opacity: 0.85; }
+    75%       { transform: translate(-2vw, 5vh); opacity: 1;    }
+}
+
+/* ── Logo ── */
+.logoWrapper {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo {
     width: 100%;
-    padding: 40px 30px;
-    border-radius: 2px;
-    background-color: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 10;
+    height: auto;
+    opacity: 0.95;
+    margin-bottom: 20px;
 }
 
-/* ── Header de la card ─────────────────────────────────────── */
-.cardSubtitle {
-    font-size: 0.6rem;
-    letter-spacing: 5px;
-    color: #00d4ff;
+/* logo grande dentro del card */
+.logoCard {
+    width: 70%;
+    height: auto;
+    opacity: 0.92;
+}
+
+
+.appSubtitle {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: rgba(226, 226, 226, 0.973);
+    text-align: center;
+    margin-top: 5%;
 }
 
-.cardTitle {
-    font-weight: 200;
-    color: #fff;
-    letter-spacing: 3px;
-    margin-top: 10px;
+.appTitle {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: center;
+    margin: 0;
 }
 
-/* ── Inputs ────────────────────────────────────────────────── */
+/* ── Formulario ── */
+.formWrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 320px;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.inputGroup {
+    position: relative;
+    margin-bottom: 6px;
+}
+
 .input {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
-    border-radius: 2px;
-    padding: 12px 15px;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-}
-
-.input::placeholder {
-    color: rgba(255, 255, 255, 0.2) !important;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(40, 220, 143, 0.25) !important;
+    border-radius: 4px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-family: var(--font-primary) !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.14em !important;
+    padding: 14px 12px 10px 12px !important;
+    caret-color: rgba(40, 220, 143, 0.9);
+    transition: border-color 0.25s ease;
 }
 
 .input:focus {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    border-color: #00d4ff !important;
-    color: #fff !important;
+    background: rgba(255, 255, 255, 0.10) !important;
+    border-bottom-color: rgba(40, 220, 143, 0.7) !important;
     box-shadow: none !important;
+    outline: none !important;
+    color: #ffffff !important;
 }
 
-/* ── Contador de caracteres ────────────────────────────────── */
+.input::placeholder {
+    color: rgba(255, 255, 255, 0.28) !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.16em !important;
+}
+
 .charCounter {
-    font-size: 0.55rem;
-    color: rgba(255, 255, 255, 0.3);
-    text-align: right;
-    margin-bottom: 15px;
     display: block;
-    letter-spacing: 1px;
+    text-align: right;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    color: rgba(40, 220, 143, 0.35);
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
-/* ── Botón ─────────────────────────────────────────────────── */
+/* ── Botón ── */
 .button {
-    background: none !important;
-    border: 1px solid #00d4ff !important;
-    color: #00d4ff !important;
-    border-radius: 2px;
-    padding: 12px;
-    font-weight: 300;
-    font-size: 0.7rem;
-    letter-spacing: 4px;
+    background: transparent !important;
+    border: 1px solid rgba(40, 220, 143, 0.4) !important;
+    border-radius: 6px !important;
+    color: rgba(40, 220, 143, 0.9) !important;
+    font-family: var(--font-primary) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.22em !important;
     text-transform: uppercase;
-    transition: 0.4s;
-    margin-top: 10px;
+    padding: 14px 0 !important;
+    margin-top: 12px;
+    transition: all 0.25s ease;
 }
 
 .button:hover {
-    background-color: rgba(0, 212, 255, 0.1) !important;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    background: rgba(40, 220, 143, 0.1) !important;
+    border-color: rgba(40, 220, 143, 0.7) !important;
+    color: rgba(40, 220, 143, 1) !important;
 }
 
-/* ── Toast de error ────────────────────────────────────────── */
+.button:active {
+    transform: scale(0.98);
+    background: rgba(40, 220, 143, 0.15) !important;
+}
+
+/* ── Toast ── */
 .toast {
-    background-color: rgba(20, 20, 20, 0.95);
-    color: #ff4d4d;
-    border: 1px solid rgba(255, 77, 77, 0.2);
-    border-radius: 2px;
-    backdrop-filter: blur(10px);
+    background: rgba(15, 44, 30, 0.95) !important;
+    border: 1px solid rgba(40, 220, 143, 0.2) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(12px);
 }
 
 .toastBody {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-primary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
     text-align: center;
+}
+
+.glassCard {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 20px;
+    padding: 36px 28px 32px 28px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 24px;
+    position: relative;
+    z-index: 2;
 }

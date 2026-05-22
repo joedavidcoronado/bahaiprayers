@@ -1,0 +1,251 @@
+/* ── Fondo fijo ────────────────────────────────────────────── */
+.wrapper {
+    background: transparent;
+    min-height: 100vh;
+    padding: calc(60px + env(safe-area-inset-top)) 20px calc(env(safe-area-inset-bottom)) 20px;
+    color: #1e2923;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-primary), sans-serif;
+}
+
+.wrapper::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg,
+        #f7f5f0 0%,
+        #eeeae0 45%,
+        #6b7a6a 72%,
+        #1a2e1f 85%,
+        #050a05 100%
+    );
+    pointer-events: none;
+}
+
+/* ── Bokeh ─────────────────────────────────────────────────── */
+.bokehContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    filter: blur(30px);
+    pointer-events: none;
+}
+
+.bokeh {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 5s infinite ease-in-out;
+    opacity: 0.8;
+    mix-blend-mode: multiply;
+}
+
+.p1 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(40, 220, 142, 0.629) 0%, transparent 70%);
+    top: -5%; right: -5%;
+    animation-delay: -1s;
+}
+
+.p2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(162, 224, 198, 0.796) 0%, transparent 70%);
+    top: 5%; left: -5%;
+    animation-delay: -3s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(-3vw, 3vh) scale(1.05); }
+    66%       { transform: translate(2vw, -2vh) scale(0.95); }
+}
+
+/* ── Toast ─────────────────────────────────────────────────── */
+.copyToast {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(40, 220, 143, 0.9);
+    color: #000;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-family: var(--font-primary);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    font-weight: 700;
+    z-index: 2000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 10px 30px rgba(40, 220, 143, 0.25);
+}
+
+.copyToastVisible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Botón volver ──────────────────────────────────────────── */
+.backBtn {
+    background: none;
+    border: none;
+    color: #555;
+    margin-bottom: 30px;
+    font-family: var(--font-primary);
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 3;
+    position: relative;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    font-weight: 600;
+}
+
+.backBtn:hover {
+    color: #0f2c1e;
+}
+
+/* ── Área de contenido ─────────────────────────────────────── */
+.contentArea {
+    padding: 20px 10px;
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Tipografía ────────────────────────────────────────────── */
+.cat {
+    color: var(--cbb-verde-principal, rgba(40, 220, 143, 0.9));
+    font-family: var(--font-primary);
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.titulo {
+    font-family: var(--font-primary);
+    font-size: clamp(1.1rem, 7vw, 1.4rem);
+    font-weight: 200;
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    color: #0f2c1e;
+}
+
+.textoPrevioPost {
+    font-family: var(--font-secondary);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #5a6b60;
+    font-style: italic;
+    text-align: justify;
+    margin-bottom: 25px;
+    font-weight: 300;
+}
+
+.parrafoPrincipal {
+    font-family: var(--font-secondary);
+    font-size: 1.05rem;
+    line-height: 2.1;
+    color: #1e2923;
+    text-align: justify;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.autor {
+    font-family: var(--font-primary);
+    color: #276e4a;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-align: right;
+    display: block;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* ── Firma solo captura ────────────────────────────────────── */
+.onlyCapture {
+    display: none;
+    text-align: center;
+    margin-top: 60px;
+    opacity: 0.3;
+    font-family: var(--font-primary);
+    font-size: 0.5rem;
+    letter-spacing: 4px;
+}
+
+/* ── FAB ───────────────────────────────────────────────────── */
+.fabContainer {
+    position: fixed;
+    bottom: 45px;
+    right: 30px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.mainFab {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: rgba(15, 44, 30, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 44, 30, 0.12);
+    color: rgba(30, 41, 35, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mainFabOpen {
+    color: rgba(40, 220, 143, 0.9);
+    transform: rotate(-90deg);
+    background: rgba(40, 220, 143, 0.08);
+    border-color: rgba(40, 220, 143, 0.2);
+}
+
+.menuItem {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 44, 30, 0.08);
+    color: #0f2c1e;
+    padding: 8px 15px;
+    border-radius: 2px;
+    font-family: var(--font-primary);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, opacity 0.4s ease, transform 0.4s ease;
+    font-weight: 600;
+}
+
+.menuItem:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.menuItemFav {
+    color: rgba(40, 220, 143, 0.9);
+    border-color: rgba(40, 220, 143, 0.3);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: #f7f5f0; }
+::-webkit-scrollbar-thumb { background: var(--cbb-verde-principal); border-radius: 10px; }
