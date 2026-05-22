@@ -1,6 +1,6 @@
 /* ── Fondo fijo ────────────────────────────────────────────── */
 .wrapper {
-    background: transparent;
+    background: #ECF4F1;
     min-height: 100vh;
     padding: calc(60px + env(safe-area-inset-top)) 20px calc(env(safe-area-inset-bottom)) 20px;
     color: #1e2923;
@@ -188,7 +188,7 @@
 .fabContainer {
     position: fixed;
     bottom: 45px;
-    right: 30px;
+    right: 15px;
     display: flex;
     flex-direction: row-reverse;
     align-items: center;

@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 60px;
+  padding-top: 30%;
   padding-bottom: 60px;
   color: #fff;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -62,15 +62,18 @@
 
 /* ─── BOTÓN VOLVER ─── */
 .backBtn {
-  position: relative; z-index: 10;
+  position: fixed;   /* cambia 'relative' por 'fixed' */
+  top: 46px;
+  left: 40px;
+  z-index: 10;
   background: none; border: none;
   color: rgba(18, 39, 15, 0.884);
   font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
   font-family: inherit; cursor: pointer; padding: 0;
-  margin-bottom: 30px;
   transition: color 0.3s ease;
   -webkit-tap-highlight-color: transparent;
 }
+
 .backBtn:active { color: #fff; }
 
 /* ─── CABECERA ─── */

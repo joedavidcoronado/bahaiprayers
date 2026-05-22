@@ -13,7 +13,7 @@
 /* ── 1/5 de Pantalla: Cuadrado Verde Estilo Editorial ── */
 .topHeader {
     width: 100%;
-    height: 20vh; /* Exactamente el 20% del viewport */
+    height: calc(20vh + 36px); /* Exactamente el 20% del viewport */
     background: #7FAF9B;
     display: flex;
     flex-direction: column; 
@@ -91,20 +91,22 @@
     color: #f7f5f0; /* Letras crema sobre verde oscuro */
     z-index: 2;
     position: relative;
-    margin: 0;
+    margin: 10px 0px;
 }
 
 /* ── Contenedor Inferior (Bottom Sheet Curvo) ── */
 .bottomSheet {
-    background: linear-gradient(180deg, #f7f5f0 0%, #eeeae0 100%);
+    background: rgba(255, 255, 255, 0.82);
     border-top-left-radius: 36px;
     border-top-right-radius: 0px;
     min-height: 80vh; /* Ocupa el 80% restante */
     position: relative;
+    margin-top: -36px; /* ← sube encima del header */
     z-index: 2;
     padding: 24px 12px calc(40px + env(safe-area-inset-bottom)) 12px;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
 }
+
 
 /* Etiqueta Minimalista encima del Search */
 .sectionLabelAboveSearch {

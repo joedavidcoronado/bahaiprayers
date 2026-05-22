@@ -1,5 +1,5 @@
 import SplashScreen from "../components/SplashScreen";
-    import SideBar from "../components/SideBar";
+import SideBar from "../components/SideBar";
 import { useNavigate } from "react-router-dom";
 
 const WelcomeAnimation = () => {

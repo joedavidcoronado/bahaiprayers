@@ -89,7 +89,9 @@
 
 /* --- BOTÓN VOLVER --- */
 .backBtn {
-  position: relative;
+  position: fixed;
+  top: 46px;
+  left: 40px;
   z-index: 10;
   background: none;
   border: none;
@@ -115,7 +117,7 @@
 }
 
 .heading {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   letter-spacing: 5px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.85);
@@ -161,7 +163,7 @@
 
 .progressInfo {
   margin-top: 40px;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   letter-spacing: 4px;
   color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;

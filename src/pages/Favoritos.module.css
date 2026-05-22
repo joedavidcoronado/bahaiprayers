@@ -13,7 +13,7 @@ padding: 0;
 /* STREAMING_CHUNK: Estilizando el encabezado editorial del 20% de la pantalla */
 .topHeader {
 width: 100%;
-height: 20vh; /* 1/5 exacto de la pantalla */
+height: calc(20vh + 36px); /* 1/5 exacto de la pantalla */
 background: #7FAF9B;
 display: flex;
 align-items: center;
@@ -109,11 +109,12 @@ margin: 0;
 
 /* STREAMING_CHUNK: Estilizando el Bottom Sheet con curvatura premium */
 .bottomSheet {
-background: linear-gradient(180deg, #f7f5f0 0%, #eeeae0 100%);
+background: rgba(255, 255, 255, 0.82);
 border-top-left-radius: 36px;
 border-top-right-radius: 0px;
 min-height: 80vh;
 position: relative;
+margin-top: -36px; /* ← sube encima del header */
 z-index: 2;
 padding: 24px 12px calc(40px + env(safe-area-inset-bottom)) 12px;
 box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
