@@ -126,23 +126,32 @@ const OracionesList = () => {
                         <div className={`${styles.bokeh} ${styles.p3}`} />
                         <div className={`${styles.bokeh} ${styles.p4}`} />
                     </div>
-
+                    {categoriaSeleccionada && (
+                                <button
+                                    className={styles.backBtn}
+                                    onClick={() => setCategoriaSeleccionada(null)}
+                                >
+                                    ← VOLVER
+                                </button>
+                            )}
                     <h1 className={styles.title}>
                         {categoriaSeleccionada ? categoriaSeleccionada.nombre : "ORACIONES"}
                     </h1>
 
                     {/* 👇 Botones de idioma */}
-                    <div className={styles.idiomaSelector}>
-                        {IDIOMAS.map(({ code, label }) => (
-                            <button
-                                key={code}
-                                className={`${styles.idiomaBtn} ${idioma === code ? styles.idiomaBtnActivo : ""}`}
-                                onClick={() => setIdioma(code)}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+                    {!categoriaSeleccionada && (
+                        <div className={styles.idiomaSelector}>
+                            {IDIOMAS.map(({ code, label }) => (
+                                <button
+                                    key={code}
+                                    className={`${styles.idiomaBtn} ${idioma === code ? styles.idiomaBtnActivo : ""}`}
+                                    onClick={() => setIdioma(code)}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Contenedor Inferior — sin tocar */}
@@ -153,14 +162,6 @@ const OracionesList = () => {
                         </div>
 
                         <div className={styles.searchWrapper}>
-                            {categoriaSeleccionada && (
-                                <button
-                                    className={styles.backBtn}
-                                    onClick={() => setCategoriaSeleccionada(null)}
-                                >
-                                    ← VOLVER AL ARCHIVO
-                                </button>
-                            )}
                             <input
                                 type="text"
                                 placeholder={categoriaSeleccionada ? "FILTRAR EN ESTA CATEGORÍA" : "BUSCAR CATEGORÍA U ORACIÓN"}

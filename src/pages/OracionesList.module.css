@@ -177,19 +177,21 @@ background: rgba(255, 255, 255, 0.9);
 }
 
 .backBtn {
-background: none;
-border: none;
-color: #0f2c1e;
-margin-bottom: 12px;
-font-family: var(--font-primary);
-font-size: 0.58rem;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-font-weight: 700;
-cursor: pointer;
-display: block;
-opacity: 0.6;
-transition: opacity 0.2s ease;
+    position: absolute;
+    top: 46px;
+    left: 40px;
+    background: none;
+    border: none;
+    margin-bottom: 30px;
+    font-family: var(--font-primary);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #353535;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 3;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .backBtn:hover {

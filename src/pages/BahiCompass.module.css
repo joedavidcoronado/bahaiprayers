@@ -68,10 +68,12 @@
   z-index: 10;
   background: none; border: none;
   color: rgba(18, 39, 15, 0.884);
-  font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
-  font-family: inherit; cursor: pointer; padding: 0;
-  transition: color 0.3s ease;
-  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-primary);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 3px;
+  transition: color 0.2s ease;
 }
 
 .backBtn:active { color: #fff; }

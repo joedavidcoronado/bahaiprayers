@@ -1,19 +1,18 @@
-// ImagenSend.jsx
 import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { AppContext } from "../context/AppContext";
 import html2canvas from "html2canvas";
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Media } from '@capacitor-community/media';
 import { Share } from '@capacitor/share';
 import styles from "./ImagenSend.module.css";
 
 const getSufijo = (idioma) => idioma === "es" ? "" : `_${idioma}`;
 
-const MIN_CHARS_PER_PAGE = 300; // mínimo de chars para que una página "valga"
-const MAX_CHARS_PER_PAGE = 600; // máximo antes de cortar
+const MIN_CHARS_PER_PAGE = 300;
+const MAX_CHARS_PER_PAGE = 600;
 
-/* ── Split inteligente por párrafos ── */
 const buildPages = (oracion) => {
   const segments = [
     ...oracion.previo.map(t   => ({ text: t, type: "italic" })),
@@ -24,20 +23,24 @@ const buildPages = (oracion) => {
   if (!segments.length) return [[]];
 
   const totalChars = segments.reduce((a, s) => a + s.text.length, 0);
-  if (totalChars <= MAX_CHARS_PER_PAGE) return [segments]; // una sola página
+  if (totalChars <= MAX_CHARS_PER_PAGE) return [segments];
+
+  // Calcular cuántas páginas necesitamos y repartir equitativamente
+  const numPages = Math.ceil(totalChars / MAX_CHARS_PER_PAGE);
+  const targetPerPage = Math.ceil(totalChars / numPages);
 
   const pages = [];
   let current = [], currentChars = 0;
 
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
-    const wouldExceed = currentChars + seg.text.length > MAX_CHARS_PER_PAGE;
-    const hasMinimum  = currentChars >= MIN_CHARS_PER_PAGE;
-    const isLast      = i === segments.length - 1;
+    const isLast = i === segments.length - 1;
 
-    if (wouldExceed && hasMinimum && !isLast) {
+    if (currentChars + seg.text.length > targetPerPage 
+        && current.length > 0 
+        && pages.length < numPages - 1) {
       pages.push(current);
-      current      = [seg];
+      current = [seg];
       currentChars = seg.text.length;
     } else {
       current.push(seg);
@@ -45,20 +48,12 @@ const buildPages = (oracion) => {
     }
   }
 
-  // La última página: si quedó muy corta, la fusionamos con la anterior
-  if (current.length > 0) {
-    if (pages.length > 0 && currentChars < MIN_CHARS_PER_PAGE) {
-      pages[pages.length - 1] = [...pages[pages.length - 1], ...current];
-    } else {
-      pages.push(current);
-    }
-  }
+  if (current.length) pages.push(current);
 
   return pages;
 };
 
-/* ── Poster individual (usado en preview y en captura) ── */
-const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPages, theme, fontFamily, fontSize, styles: s }, ref) => {
+const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPages, theme, fontFamily, fontSize, textColor, styles: s }, ref) => {
   const isFirst = pageIdx === 0;
   const isLast  = pageIdx === totalPages - 1;
   const isMulti = totalPages > 1;
@@ -69,7 +64,6 @@ const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPag
       className={s.poster}
       style={{ background: theme.grad, border: theme.border || "none", fontFamily }}
     >
-      {/* Línea decorativa superior */}
       <div className={s.posterLineTop} style={{ background: theme.accent }} />
 
       <div className={s.innerContent}>
@@ -80,7 +74,7 @@ const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPag
               {oracion.categoria}
             </span>
             {oracion.titulo ? (
-              <h2 className={s.titulo} style={{ color: theme.color }}>
+              <h2 className={s.titulo} style={{ color: textColor || theme.color }}>
                 {oracion.titulo}
               </h2>
             ) : null}
@@ -96,7 +90,7 @@ const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPag
 
         <div
           className={s.bodyText}
-          style={{ fontSize: `${fontSize}rem`, color: theme.color }}
+          style={{ fontSize: `${fontSize}rem`, color: textColor || theme.color }}
         >
           {pageSegments.map((seg, i) => (
             <p key={i} className={seg.type === "italic" ? s.italic : s.normal}>
@@ -106,12 +100,11 @@ const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPag
         </div>
 
         {isLast && (
-          <span className={s.autor} style={{ color: theme.color }}>
+          <span className={s.autor} style={{ color: textColor || theme.color }}>
             — {oracion.autor}
           </span>
         )}
 
-        {/* Footer */}
         <div className={s.posterFooter}>
           <img src="/logo2.png" alt="" className={s.logoImg} />
           {isMulti && (
@@ -123,13 +116,11 @@ const PosterSlide = React.forwardRef(({ oracion, pageSegments, pageIdx, totalPag
 
       </div>
 
-      {/* Línea decorativa inferior */}
       <div className={s.posterLineBottom} style={{ background: theme.accent }} />
     </div>
   );
 });
 
-/* ── Componente principal ── */
 const ImagenSend = () => {
   const { id }        = useParams();
   const navigate      = useNavigate();
@@ -144,15 +135,22 @@ const ImagenSend = () => {
   const [fontSize,    setFontSize]    = useState(1.0);
   const [activeTheme, setActiveTheme] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [textColor,   setTextColor]   = useState(null);
+  const [showModal,   setShowModal]   = useState(false);
 
   const captureRefs = useRef([]);
+  const visibleRef  = useRef(null);
 
   const themes = [
-    { name: "Noche",    grad: "linear-gradient(160deg, #060818 0%, #0d1033 100%)",  color: "#e8eaf6", accent: "#7986cb" },
-    { name: "Amanecer", grad: "linear-gradient(160deg, #1a0a0f 0%, #3d1a22 100%)",  color: "#fce4ec", accent: "#f48fb1" },
-    { name: "Místico",  grad: "linear-gradient(160deg, #071410 0%, #0e2820 100%)",  color: "#e0f2f1", accent: "#80cbc4" },
-    { name: "Elegante", grad: "linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 100%)",  color: "#f5f5f0", accent: "#d4b483", border: "1px solid rgba(212,180,131,0.2)" },
-    { name: "Cielo",    grad: "linear-gradient(160deg, #0d1b2a 0%, #1b2d42 100%)",  color: "#e3f2fd", accent: "#90caf9" },
+    { name: "Noche",     grad: "linear-gradient(160deg, #060818 0%, #0d1033 100%)",  color: "#e8eaf6", accent: "#7986cb" },
+    { name: "Amanecer",  grad: "linear-gradient(160deg, #1a0a0f 0%, #3d1a22 100%)",  color: "#fce4ec", accent: "#f48fb1" },
+    { name: "Místico",   grad: "linear-gradient(160deg, #071410 0%, #0e2820 100%)",  color: "#e0f2f1", accent: "#80cbc4" },
+    { name: "Elegante",  grad: "linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 100%)",  color: "#f5f5f0", accent: "#d4b483", border: "1px solid rgba(212,180,131,0.2)" },
+    { name: "Cielo",     grad: "linear-gradient(160deg, #0d1b2a 0%, #1b2d42 100%)",  color: "#e3f2fd", accent: "#90caf9" },
+    { name: "Jardín",    grad: "linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 100%)",  color: "#1b5e20", accent: "#276e4a" },
+    { name: "Niebla",    grad: "linear-gradient(160deg, #f1f8f4 0%, #dceee4 100%)",  color: "#2e4a38", accent: "#4caf7d" },
+    { name: "Esmeralda", grad: "linear-gradient(160deg, #e0f2ec 0%, #b2dfdb 100%)",  color: "#004d40", accent: "#00897b" },
+    { name: "Alba",      grad: "linear-gradient(160deg, #fffde7 0%, #e8f5e9 100%)",  color: "#33691e", accent: "#7cb342" },
   ];
 
   const fonts = [
@@ -182,32 +180,79 @@ const ImagenSend = () => {
 
   useEffect(() => { setCurrentPage(0); }, [pages.length]);
 
-  /* ── Compartir ── */
   const handleShare = async () => {
     setLoading(true);
+    const savedPage = currentPage;
     try {
-      const uris = [];
+      const canvases = [];
       for (let i = 0; i < pages.length; i++) {
-        const el = captureRefs.current[i];
+        setCurrentPage(i);
+        await new Promise(r => setTimeout(r, 250));
+        const el = visibleRef.current;
         if (!el) continue;
-        const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: "#000" });
-        const saved  = await Filesystem.writeFile({
-          path: `oracion_${Date.now()}_${i}.png`,
-          data: canvas.toDataURL("image/png").split(",")[1],
+        const canvas = await html2canvas(el, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false,
+        });
+        canvases.push(canvas);
+      }
+
+      if (canvases.length === 0) throw new Error("Sin imágenes");
+
+      if (pages.length === 1) {
+        const saved = await Filesystem.writeFile({
+          path:      `oracion_${Date.now()}.png`,
+          data:      canvases[0].toDataURL("image/png").split(",")[1],
           directory: Directory.Cache,
         });
-        uris.push(saved.uri);
+        await Share.share({
+          title:       oracion.titulo || "Oración",
+          text:        "Compartido desde Oraciones Bahá'ís",
+          files:       [saved.uri],
+          dialogTitle: "Compartir Oración",
+        });
+      } else {
+        await Media.requestPermissions();
+
+        const { albums } = await Media.getAlbums();
+
+        const writableAlbums = albums.filter(a => {
+          const id = (a.identifier || "").toLowerCase();
+          return !id.includes("/system/")
+              && !id.includes("wallpaper")
+              && !id.includes("ringtone")
+              && !id.includes("notification")
+              && !id.includes("alarm");
+        });
+
+        const target = writableAlbums.find(a => a.name === "Oraciones Bahai")
+                    || writableAlbums.find(a => a.name === "Camera")
+                    || writableAlbums.find(a => a.name === "DCIM")
+                    || writableAlbums.find(a => a.name === "Pictures")
+                    || writableAlbums[0];
+
+        console.log("Álbumes disponibles:", JSON.stringify(writableAlbums.map(a => a.name)));
+        console.log("Usando:", target?.name, target?.identifier);
+
+        const albumIdentifier = target?.identifier;
+
+        for (let i = 0; i < canvases.length; i++) {
+          const saved = await Filesystem.writeFile({
+            path:      `oracion_${Date.now()}_${i}.png`,
+            data:      canvases[i].toDataURL("image/png").split(",")[1],
+            directory: Directory.Cache,
+          });
+          await Media.savePhoto({ path: saved.uri, albumIdentifier });
+        }
+        setShowModal(true);
       }
-      await Share.share({
-        title:       oracion.titulo || "Oración",
-        text:        "Compartido desde Oraciones Bahá'ís",
-        files:       uris,
-        dialogTitle: "Compartir Oración",
-      });
     } catch (err) {
       console.error(err);
-      alert("No se pudo compartir.");
+      alert("Error: " + err.message + " | " + JSON.stringify(err));
     } finally {
+      setCurrentPage(savedPage);
       setLoading(false);
     }
   };
@@ -243,9 +288,9 @@ const ImagenSend = () => {
         {/* ── Área de preview ── */}
         <div className={styles.previewArea}>
 
-          {/* Poster visible */}
           <div className={styles.posterVisible}>
             <PosterSlide
+              ref={visibleRef}
               oracion={oracion}
               pageSegments={pages[currentPage] || []}
               pageIdx={currentPage}
@@ -253,11 +298,11 @@ const ImagenSend = () => {
               theme={theme}
               fontFamily={fontFamily}
               fontSize={fontSize}
+              textColor={textColor}
               styles={styles}
             />
           </div>
 
-          {/* Posters ocultos para captura (todos menos el actual) */}
           <div className={styles.captureZone}>
             {pages.map((pageSegs, i) => (
               <PosterSlide
@@ -270,12 +315,12 @@ const ImagenSend = () => {
                 theme={theme}
                 fontFamily={fontFamily}
                 fontSize={fontSize}
+                textColor={textColor}
                 styles={styles}
               />
             ))}
           </div>
 
-          {/* Navegación */}
           {pages.length > 1 && (
             <div className={styles.navRow}>
               <button
@@ -307,6 +352,7 @@ const ImagenSend = () => {
         <div className={styles.floatingControls}>
           <div className={styles.floatingInner}>
 
+            {/* LETRA + color de texto */}
             <div className={styles.controlRow}>
               <span className={styles.label}>LETRA</span>
               <input
@@ -315,8 +361,21 @@ const ImagenSend = () => {
                 onChange={e => setFontSize(parseFloat(e.target.value))}
                 className={styles.range}
               />
+              <div className={styles.colorDots}>
+                <button
+                  className={`${styles.colorDot} ${textColor === '#0f0f0f' ? styles.colorDotActive : ''}`}
+                  style={{ background: '#0f0f0f' }}
+                  onClick={() => setTextColor(textColor === '#0f0f0f' ? null : '#0f0f0f')}
+                />
+                <button
+                  className={`${styles.colorDot} ${textColor === '#ffffff' ? styles.colorDotActive : ''}`}
+                  style={{ background: '#ffffff' }}
+                  onClick={() => setTextColor(textColor === '#ffffff' ? null : '#ffffff')}
+                />
+              </div>
             </div>
 
+            {/* TEMA */}
             <div className={styles.controlRow}>
               <span className={styles.label}>TEMA</span>
               <div className={styles.chipRow}>
@@ -326,13 +385,12 @@ const ImagenSend = () => {
                     onClick={() => setActiveTheme(i)}
                     className={`${styles.themeChip} ${activeTheme === i ? styles.themeChipActive : ""}`}
                     style={{ background: t.grad }}
-                  >
-                    {activeTheme === i && <span className={styles.themeCheck}>✓</span>}
-                  </button>
+                  />
                 ))}
               </div>
             </div>
 
+            {/* FUENTE */}
             <div className={styles.controlRow}>
               <span className={styles.label}>FUENTE</span>
               <div className={styles.chipRow}>
@@ -352,6 +410,25 @@ const ImagenSend = () => {
           </div>
         </div>
 
+      </div>
+
+      {/* ── Modal ── */}
+      <div
+        className={`${styles.modalOverlay} ${showModal ? styles.modalOverlayActive : ''}`}
+        onClick={() => setShowModal(false)}
+      >
+        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <span className={styles.modalBadge}>Imágenes guardadas</span>
+          <h3 className={styles.modalTitle}>En tu galería</h3>
+          <p className={styles.modalQuote}>
+            Esta oración tiene {pages.length} páginas, así que las guardamos
+            directamente en tu galería de fotos para que puedas compartirlas
+            fácilmente desde ahí.
+          </p>
+          <div className={styles.modalCloseBtn} onClick={() => setShowModal(false)}>
+            Entendido
+          </div>
+        </div>
       </div>
 
       <style>{`

@@ -89,19 +89,21 @@
 
 /* ── Botón volver ──────────────────────────────────────────── */
 .backBtn {
+    position: absolute;
+    top: -22px;
+    left: 30px;
     background: none;
     border: none;
-    color: #555;
     margin-bottom: 30px;
     font-family: var(--font-primary);
     font-size: 0.65rem;
+    font-weight: 600;
+    color: #555;
     letter-spacing: 3px;
     text-transform: uppercase;
     z-index: 3;
-    position: relative;
     cursor: pointer;
     transition: color 0.2s ease;
-    font-weight: 600;
 }
 
 .backBtn:hover {
@@ -187,7 +189,7 @@
 /* ── FAB ───────────────────────────────────────────────────── */
 .fabContainer {
     position: fixed;
-    bottom: 45px;
+    bottom: 33px;
     right: 15px;
     display: flex;
     flex-direction: row-reverse;
@@ -213,23 +215,22 @@
 }
 
 .mainFabOpen {
-    color: rgba(40, 220, 143, 0.9);
+    color: rgba(34, 179, 116, 0.9);
     transform: rotate(-90deg);
     background: rgba(40, 220, 143, 0.08);
     border-color: rgba(40, 220, 143, 0.2);
 }
 
 .menuItem {
-    background: rgba(255, 255, 255, 0.6);
+    background: #008b76d8;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(15, 44, 30, 0.08);
-    color: #0f2c1e;
-    padding: 8px 15px;
-    border-radius: 2px;
+    color: #ECF4F1;
+    padding: 8px 7px;
+    border-radius: 9px;
     font-family: var(--font-primary);
-    font-size: 0.6rem;
-    letter-spacing: 2px;
+    font-size: 10px;;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.3s ease, opacity 0.4s ease, transform 0.4s ease;
@@ -237,11 +238,12 @@
 }
 
 .menuItem:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: #01ac92d8;
 }
 
 .menuItemFav {
-    color: rgba(40, 220, 143, 0.9);
+    background: #008b76d8;
+    color: rgba(60, 244, 164, 0.896);
     border-color: rgba(40, 220, 143, 0.3);
 }
 

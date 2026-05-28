@@ -2,7 +2,6 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Container, Spinner } from "react-bootstrap";
 import { AppContext } from "../context/AppContext";
-import SideBar from "../components/SideBar";
 import html2canvas from "html2canvas";
 import styles from "./DetalleOracion.module.css";
 
@@ -104,7 +103,6 @@ const DetalleOracion = () => {
 
   return (
     <>
-      <SideBar />
       <div className={styles.wrapper}>
 
         {/* Toast */}
